@@ -21,3 +21,5 @@ jobs:
         with:
           node-version: '22'
       - run: node --test firebase/functions/validation.test.js
+      - run: npm ci --ignore-scripts --prefix firebase/functions
+      - run: node -e "require('./firebase/functions/index.js')"

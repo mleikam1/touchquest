@@ -21,3 +21,5 @@ The first iOS build failed because Firebase requires iOS 15; project deployment 
 Xcode's generated Swift package source links live under build/ios. They are excluded from analysis and Git. On macOS, `dart format .` may also traverse these generated dependency copies; CI runs on Linux and does not generate that iOS tree. For routine source-only formatting after native builds, use `dart format lib test`.
 
 No physical-device performance benchmark, store signing, credential-backed Firebase/OAuth test, production ad impression, web ad provider or deployed Firestore rule test was performed. These are explicitly not claimed as passing. Cloud submissions remain unverified and cannot enter public rankings through client writes.
+
+Backend module loading was also checked with the resolved Firebase Admin 14.3.0 / Functions 7.3.2 packages. Admin initialization uses the current modular API. `npm audit --omit=dev` reports zero vulnerabilities after constraining legacy transitive uuid versions to the compatible fixed 11.1.1 line. Function deployment still requires the user's Firebase project and is not claimed.
