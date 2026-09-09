@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    match /users/{uid} {
+      allow read, delete: if owner(uid);
+      // These are private sync preferences and unverified local statistics.
+      // They are never used to populate public rankings.
+      allow create, update: if owner(uid)
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 100;
+    }
+    match /runs/{runId} {
+      allow read: if owner(resource.data.uid);
+      allow create: if owner(request.resource.data.uid)
+        && request.resource.data.keys().hasOnly(['runId','uid','mode','rawTaps','score','durationMs','averageTapsPerSecond','reviveCount','highestMilestone','stage','completed','createdAt','clientVersion','verified'])
+        && request.resource.data.verified == false
+        && request.resource.data.mode in ['casual','campaign','chaos']
+        && request.resource.data.rawTaps is int
+        && request.resource.data.rawTaps >= 0
+        && request.resource.data.rawTaps <= 1000000
+        && request.resource.data.score is int
+        && request.resource.data.score >= request.resource.data.rawTaps
+        && request.resource.data.score <= request.resource.data.rawTaps * 3
+        && request.resource.data.durationMs is int
+        && request.resource.data.durationMs > 0
+        && request.resource.data.durationMs <= 86400000
+        && request.resource.data.rawTaps <= request.resource.data.durationMs / 1000 * 25 + 10
+        && request.resource.data.reviveCount in [0,1]
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if owner(resource.data.uid);
+    }
+    match /leaderboards/{entry} {
+      allow read: if true;
+      allow write: if false; // Admin SDK only, after independent verification.
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

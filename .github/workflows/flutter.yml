@@ -1,0 +1,23 @@
+name: Touch Quest checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --set-exit-if-changed .
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build web
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test firebase/functions/validation.test.js

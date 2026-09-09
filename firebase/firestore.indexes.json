@@ -1,0 +1,1 @@
+{"indexes":[{"collectionGroup":"leaderboards","queryScope":"COLLECTION","fields":[{"fieldPath":"category","order":"ASCENDING"},{"fieldPath":"value","order":"DESCENDING"}]}],"fieldOverrides":[]}
