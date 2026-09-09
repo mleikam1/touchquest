@@ -29,6 +29,8 @@ class TouchQuestGame extends FlameGame {
   final Paint ink = Paint();
   bool get reduced => save.flag('reduceMotion', false);
   bool get smooth => save.flag('reduceFlashing', true);
+  double colorPulseOpacity(double time) =>
+      smooth ? .055 : .08 + .04 * sin(time * pi * .6);
   Color get accent =>
       session.rawTaps >= 5000 || save.choice('skin', 'cyan') == 'gold'
       ? const Color(0xffffd96a)
@@ -206,9 +208,15 @@ class TouchQuestGame extends FlameGame {
       c.drawLine(Offset(0, y), Offset(size.x, y), ink);
     }
     if (session.active(400, 5)) {
-      ink.color = (smooth ? const Color(0xffaf70ff) : accent).withValues(
-        alpha: .08 + .04 * sin(clock * pi * .6),
-      );
+      ink.color =
+          (smooth
+                  ? Color.lerp(
+                      const Color(0xffaf70ff),
+                      accent,
+                      (sin(clock * .4) + 1) / 2,
+                    )!
+                  : accent)
+              .withValues(alpha: colorPulseOpacity(clock));
       c.drawRect(rect, ink);
     }
     if (session.active(4000, 10)) {

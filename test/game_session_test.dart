@@ -138,8 +138,10 @@ void main() {
     final save = SaveService(await SharedPreferences.getInstance());
     final game = TouchQuestGame(GameSession(), save, () {});
     expect(game.smooth, true);
+    expect(game.colorPulseOpacity(0), game.colorPulseOpacity(.8));
     await save.set('reduceFlashing', false);
     expect(game.smooth, false);
+    expect(game.colorPulseOpacity(0), isNot(game.colorPulseOpacity(.8)));
     expect(game.pool.length, 240);
   });
   test('Revive grace consumes only its share of a long update', () {
