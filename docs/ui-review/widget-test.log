@@ -1,0 +1,5 @@
+00:00 +0: loading /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/widget_test.dart
+00:00 +0: Menu starts guest play and named destinations
+00:01 +1: Holding and HUD/banner pointers cannot duplicate or score taps
+00:01 +2: Retry creates exactly one new session after game over
+00:01 +3: All tests passed!

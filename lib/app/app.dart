@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:math' as math;
 import 'package:flame/game.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../game/core/game_session.dart';
@@ -9,64 +10,81 @@ import '../services/save_service.dart';
 import '../services/firebase_service.dart';
 import '../services/feedback_service.dart';
 import '../services/ad_service.dart';
-
-const cyan = Color(0xff58f9ef),
-    gold = Color(0xffffd675),
-    muted = Color(0xff8e9cba);
+import '../ui/widgets/arcade_widgets.dart';
+import '../ui/widgets/tutorial_tap_artwork.dart';
+import '../ui/screens/main_menu_screen.dart';
+import '../ui/screens/chaos_intro_screen.dart';
+import '../ui/screens/secondary_screens.dart';
+import '../ui/overlays/gameplay_hud.dart';
+import '../ui/overlays/game_over_overlay.dart';
+import '../ui/preview/ui_fixture_data.dart';
 
 class TouchQuestApp extends StatelessWidget {
-  const TouchQuestApp({super.key, required this.save});
+  const TouchQuestApp({
+    super.key,
+    required this.save,
+    this.enableServices = true,
+    this.preview,
+  });
   final SaveService save;
+  final bool enableServices;
+  final String? preview;
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Touch Quest',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xff070c1b),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: cyan,
-        brightness: Brightness.dark,
-      ),
-      fontFamily: 'monospace',
-      textTheme: const TextTheme(bodyMedium: TextStyle(color: muted)),
-      sliderTheme: const SliderThemeData(activeTrackColor: cyan),
+    theme: arcadeTheme(),
+    home: QuestShell(
+      save: save,
+      enableServices: enableServices,
+      initialScenario: kReleaseMode ? null : preview,
     ),
-    home: QuestShell(save: save),
   );
 }
 
 class QuestShell extends StatefulWidget {
-  const QuestShell({super.key, required this.save});
+  const QuestShell({
+    super.key,
+    required this.save,
+    this.enableServices = true,
+    this.initialScenario,
+  });
   final SaveService save;
+  final bool enableServices;
+  final String? initialScenario;
   @override
   State<QuestShell> createState() => _QuestShellState();
 }
 
 class _QuestShellState extends State<QuestShell>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
-  late final cloud = FirebaseService(widget.save);
-  late final audio = FeedbackService(widget.save);
-  late final ads = AdService.create();
+  late final cloud = FirebaseService(save);
+  late final audio = FeedbackService(save);
+  late final ads = preview ? WebAdService() : AdService.create();
   late final AnimationController animation = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 5),
-  )..repeat(reverse: true);
+    duration: const Duration(seconds: 6),
+  );
+  SaveService get save => widget.save;
+  bool get preview => widget.initialScenario != null && !kReleaseMode;
+  bool get services => widget.enableServices && !preview;
+  String page = 'menu', notice = '', rewardMessage = '';
+  String? scenario;
   GameSession? session;
   TouchQuestGame? game;
-  String page = 'menu', notice = '';
-  int savedTaps = 0;
-  int previousMultiplier = 1;
-  bool finished = false, busy = false, warning = false;
+  int savedTaps = 0, previousMultiplier = 1;
+  bool finished = false, busy = false, warning = false, reviveReady = false;
   double hudElapsed = 0;
-  SaveService get save => widget.save;
+  Size? fixtureSize;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     save.addListener(refresh);
-    unawaited(setup());
+    ads.rewardState.addListener(refresh);
+    if (!preview) animation.repeat(reverse: true);
+    if (preview) selectScenario(widget.initialScenario!);
+    if (services) unawaited(setup());
   }
 
   Future<void> setup() async {
@@ -74,6 +92,10 @@ class _QuestShellState extends State<QuestShell>
     if (!mounted) return;
     await audio.init();
     if (!mounted) return;
+    if (session?.state == RunState.playing) {
+      await audio.music(true, overdrive: session!.multiplier == 2);
+      if (!mounted) return;
+    }
     try {
       await ads.initialize();
     } catch (e) {
@@ -92,7 +114,8 @@ class _QuestShellState extends State<QuestShell>
     WidgetsBinding.instance.removeObserver(this);
     animation.dispose();
     game?.pauseEngine();
-    unawaited(audio.dispose());
+    if (services) unawaited(audio.dispose());
+    ads.rewardState.removeListener(refresh);
     ads.dispose();
     super.dispose();
   }
@@ -104,57 +127,68 @@ class _QuestShellState extends State<QuestShell>
 
   @override
   void didChangeMetrics() {
-    pause();
-  }
-
-  void pause() {
-    audio.haptics.cancel();
-    if (session?.state == RunState.playing) {
-      session!.pause();
-      game!.pauseEngine();
-      unawaited(audio.music(false));
-      unawaited(checkpoint());
-      refresh();
-    }
+    if (!preview) pause();
   }
 
   Future<void> checkpoint() async {
-    final s = session;
-    if (s == null) return;
+    if (preview || session == null) return;
+    final s = session!;
     final previous = savedTaps;
     savedTaps = s.rawTaps;
     await save.record(s, previous);
   }
 
+  void pause() {
+    if (session?.state == RunState.playing) {
+      session!.pause();
+      game?.pauseEngine();
+      if (services) {
+        audio.haptics.cancel();
+        unawaited(audio.music(false));
+      }
+      unawaited(checkpoint());
+      refresh();
+    }
+  }
+
   void resume() {
     session!.resume();
     game!.resumeEngine();
-    unawaited(audio.music(true));
+    reviveReady = false;
+    if (services) unawaited(audio.music(true));
     refresh();
   }
 
   void start(GameMode mode, {int stage = 0}) {
+    if (!mounted) return;
+    animation.stop();
     game?.pauseEngine();
     session = GameSession(
       mode: mode,
       stage: stage,
       velocityPerk: save.badges.contains(15000),
-      seed: DateTime.now().millisecondsSinceEpoch,
+      seed: preview ? 42 : DateTime.now().millisecondsSinceEpoch,
     );
     savedTaps = 0;
     previousMultiplier = 1;
     hudElapsed = 0;
     finished = false;
     warning = false;
+    reviveReady = false;
     notice = '';
+    rewardMessage = '';
+    scenario = null;
+    fixtureSize = null;
     game = TouchQuestGame(session!, save, frame);
     page = 'play';
-    unawaited(cloud.event('mode_selected', {'mode': mode.name}));
-    unawaited(cloud.event('game_started', {'mode': mode.name}));
-    if (mode == GameMode.campaign) {
-      unawaited(cloud.event('campaign_level_started', {'stage': stage}));
+    if (services) {
+      unawaited(cloud.event('mode_selected', {'mode': mode.name}));
+      unawaited(cloud.event('game_started', {'mode': mode.name}));
+      if (mode == GameMode.campaign) {
+        unawaited(cloud.event('campaign_level_started', {'stage': stage}));
+      }
+      unawaited(audio.music(true));
     }
-    unawaited(audio.music(true));
     refresh();
   }
 
@@ -162,37 +196,50 @@ class _QuestShellState extends State<QuestShell>
     final s = session!;
     if (s.multiplier != previousMultiplier) {
       previousMultiplier = s.multiplier;
-      unawaited(
-        audio.music(s.state == RunState.playing, overdrive: s.multiplier == 2),
-      );
+      if (services) {
+        unawaited(
+          audio.music(
+            s.state == RunState.playing,
+            overdrive: s.multiplier == 2,
+          ),
+        );
+      }
     }
     if (s.remaining < .6 && !warning) {
       warning = true;
-      audio.haptic();
-      audio.sound('danger');
+      if (services) {
+        audio.haptic();
+        audio.sound('danger');
+      }
     }
     if ((s.state == RunState.over || s.state == RunState.won) && !finished) {
       finished = true;
       unawaited(checkpoint());
-      unawaited(cloud.submit(s.toJson()));
-      unawaited(
-        cloud.event('game_over', {'raw_taps': s.rawTaps, 'mode': s.mode.name}),
-      );
-      if (s.mode == GameMode.campaign) {
+      if (services) {
+        unawaited(cloud.submit(s.toJson()));
         unawaited(
-          cloud.event(
-            s.state == RunState.won
-                ? 'campaign_level_completed'
-                : 'campaign_level_failed',
-            {'stage': s.stage},
-          ),
+          cloud.event('game_over', {
+            'raw_taps': s.rawTaps,
+            'mode': s.mode.name,
+          }),
         );
+        if (s.mode == GameMode.campaign) {
+          unawaited(
+            cloud.event(
+              s.state == RunState.won
+                  ? 'campaign_level_completed'
+                  : 'campaign_level_failed',
+              {'stage': s.stage},
+            ),
+          );
+        }
+        audio.sound(s.state == RunState.won ? 'milestone' : 'gameover');
+        unawaited(audio.music(false));
       }
-      audio.sound(s.state == RunState.won ? 'milestone' : 'gameover');
-      unawaited(audio.music(false));
     }
-    // HUD has a fixed 30 Hz budget; Canvas continues at display refresh rate.
-    if (s.duration - hudElapsed >= 1 / 30 || finished) {
+    if (s.duration - hudElapsed >= 1 / 30 ||
+        finished ||
+        s.state == RunState.paused) {
       hudElapsed = s.duration;
       refresh();
     }
@@ -207,13 +254,15 @@ class _QuestShellState extends State<QuestShell>
         p,
         celebrate: unlocked.any((n) => [1000, 10000, 100000].contains(n)),
       );
-      audio.tap(s.rawTaps, funny: s.active(300, 12));
       warning = false;
+      if (services) audio.tap(s.rawTaps, funny: s.active(300, 12));
       for (final n in unlocked) {
         notice = milestones[n]!;
-        audio.celebration(n);
-        unawaited(cloud.event('milestone_$n'));
-        unawaited(cloud.event('achievement_unlocked', {'threshold': n}));
+        if (services) {
+          audio.celebration(n);
+          unawaited(cloud.event('milestone_$n'));
+          unawaited(cloud.event('achievement_unlocked', {'threshold': n}));
+        }
       }
       if (unlocked.isNotEmpty || s.rawTaps % 50 == 0) unawaited(checkpoint());
     }
@@ -228,12 +277,9 @@ class _QuestShellState extends State<QuestShell>
       await work();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            duration: const Duration(seconds: 6),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       if (mounted) setState(() => busy = false);
@@ -241,996 +287,474 @@ class _QuestShellState extends State<QuestShell>
   }
 
   void navigate(String next) {
+    if (next == 'home') next = 'menu';
     if (page == 'play') {
-      game?.pauseEngine();
-      unawaited(audio.music(false));
+      pause();
       unawaited(checkpoint());
     }
-    audio.sound('menu');
+    if (services) audio.sound('menu');
     page = next;
+    if (!preview && next == 'menu' && !save.flag('reduceMotion', false)) {
+      animation.repeat(reverse: true);
+    } else {
+      animation.stop();
+    }
     refresh();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: Column(
-              children: [
-                Expanded(
-                  child: AnimatedBuilder(
-                    animation: animation,
-                    builder: (context, _) => DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: RadialGradient(
-                          center: Alignment(
-                            save.flag('reduceMotion', false)
-                                ? 0
-                                : .5 * sin(animation.value * pi),
-                            -.6,
-                          ),
-                          radius: 1.3,
-                          colors: const [Color(0xff202044), Color(0xff080e21)],
-                        ),
-                        border: Border.symmetric(
-                          vertical: BorderSide(
-                            color: cyan.withValues(alpha: .08),
-                          ),
-                        ),
-                      ),
-                      child: page == 'play'
-                          ? play()
-                          : page == 'menu'
-                          ? menu()
-                          : subpage(),
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 58,
-                  color: const Color(0xff0d1527),
-                  alignment: Alignment.center,
-                  child: ads.banner(),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+  void selectScenario(String value) {
+    scenario = value;
+    fixtureSize = null;
+    game?.pauseEngine();
+    page = switch (value) {
+      '01_main_menu' => 'menu',
+      '06_campaign_map' => 'campaign',
+      '07_chaos_entry' => 'chaos',
+      '08_profile' => 'profile',
+      '09_settings' => 'settings',
+      '10_leaderboards' => 'leaderboard',
+      'gallery' => 'gallery',
+      _ => 'play',
+    };
+    if (value == '06_campaign_map') save.data['campaign'] = 0;
+    if (page == 'play') {
+      final casual = value == '02_casual_gameplay' || value == '05_game_over';
+      final s = GameSession(
+        mode: casual ? GameMode.casual : GameMode.campaign,
+        stage: casual ? 0 : 49,
+        seed: 42,
+      );
+      s.rawTaps = s.score = switch (value) {
+        '02_casual_gameplay' => 127,
+        '03_transition_warning' => 482,
+        '04_target_mode' => 583,
+        _ => 2847,
+      };
+      s.duration = value == '05_game_over' ? 86 : 24;
+      s.remaining = value == '03_transition_warning' ? .9 : 1.5;
+      for (final n in milestones.keys.where((n) => n <= s.rawTaps)) {
+        s.fired.add(n);
+        s.ages[n] = 12;
+      }
+      if (value == '05_game_over') {
+        s.score = 4521;
+        s.state = RunState.over;
+      }
+      session = s;
+      finished = value == '05_game_over';
+      game = TouchQuestGame(
+        s,
+        save,
+        frame,
+        frozen: true,
+        seed: 42,
+        fixtureTime: .18,
+      );
+    }
   }
 
-  Widget menu() => LayoutBuilder(
-    builder: (context, constraints) => SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(28, 24, 28, 20),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: max(0, constraints.maxHeight - 44),
+  void applyFixture(Size size) {
+    if (!preview ||
+        scenario == null ||
+        scenario == '05_game_over' ||
+        fixtureSize == size) {
+      return;
+    }
+    fixtureSize = size;
+    final s = session!;
+    s.resize(size.width, size.height);
+    RRect area(double x, double y, double w, double h) =>
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            size.width * x,
+            size.height * y,
+            size.width * w,
+            math.max(88, size.height * h),
+          ),
+          const Radius.circular(18),
+        );
+    if (scenario == '03_transition_warning') {
+      s.zones.setFixture(
+        active: area(.20, .61, .56, .23),
+        next: area(.20, .22, .56, .18),
+        previewTapsRemaining: 2,
+        previewElapsed: .3,
+      );
+    }
+    if (scenario == '04_target_mode') {
+      s.zones.setFixture(active: area(.19, .24, .65, .23), activationAge: .08);
+      game!.burst(s.zones.active.center, celebrate: true);
+      game!.previewEffectsAt(.16);
+    }
+    s.state = RunState.playing;
+  }
+
+  Future<void> revive() async {
+    await action(() async {
+      rewardMessage = '';
+      if (services) await cloud.event('revive_offered');
+      final earned = await ads.reward();
+      if (!mounted) return;
+      if (session!.revive(rewarded: earned)) {
+        finished = false;
+        reviveReady = true;
+        game!.pauseEngine();
+        if (services) {
+          audio.sound('revive');
+          await cloud.event('revive_completed');
+        }
+      } else {
+        rewardMessage = ads.rewardState.value == RewardAdState.failed
+            ? 'The ad could not play. Your run is still saved.'
+            : 'Ad closed without a reward. Your run is still saved.';
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(
+          radius: 1,
+          colors: [Color(0xff142357), Color(0xff030717)],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                tag('●  FINGER POWERED', cyan),
-                const Text(
-                  'VOL. 01',
-                  style: TextStyle(fontSize: 10, color: muted),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              height: 125,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Transform.rotate(
-                    angle: save.flag('reduceMotion', false)
-                        ? 0
-                        : (animation.value - .5) * .12,
-                    child: Container(
-                      width: 106,
-                      height: 106,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: cyan.withValues(alpha: .35),
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: cyan.withValues(alpha: .08),
-                            blurRadius: 50,
-                            spreadRadius: 15,
-                          ),
-                        ],
+      ),
+      child: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth > 600;
+            final width = wide
+                ? math.min(430.0, constraints.maxHeight * 390 / 844)
+                : constraints.maxWidth;
+            return Center(
+              child: SizedBox(
+                width: width,
+                height: constraints.maxHeight,
+                child: ClipRect(
+                  child: AnimatedBuilder(
+                    animation: animation,
+                    builder: (context, _) => MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        disableAnimations: save.flag('reduceMotion', false),
                       ),
-                      child: const Icon(
-                        Icons.touch_app_rounded,
-                        color: cyan,
-                        size: 67,
-                      ),
+                      child: buildPage(),
                     ),
                   ),
-                  Positioned(right: 35, top: 10, child: tag('1.5s', gold)),
-                  Positioned(
-                    left: 22,
-                    bottom: 10,
-                    child: tag('+1', const Color(0xffbb8cff)),
-                  ),
-                ],
-              ),
-            ),
-            const Text(
-              'TOUCH',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 48,
-                height: 1,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 7,
-                color: Colors.white,
-              ),
-            ),
-            const Text(
-              'QUEST',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 54,
-                height: 1.1,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 7,
-                color: cyan,
-                shadows: [
-                  Shadow(color: Color(0xff247e94), offset: Offset(0, 4)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'TAP. SURVIVE. ASCEND.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, letterSpacing: 3, color: muted),
-            ),
-            const SizedBox(height: 30),
-            button(
-              'PLAY ENDLESS',
-              () => start(GameMode.casual),
-              icon: Icons.bolt,
-              color: cyan,
-              subtitle: 'One rule. Don’t stop tapping.',
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: button(
-                    'CAMPAIGN',
-                    () => navigate('campaign'),
-                    icon: Icons.explore_outlined,
-                    subtitle: '50 stages',
-                    color: const Color(0xffbb8cff),
-                  ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: button(
-                    'CHAOS RUN',
-                    () => start(GameMode.chaos),
-                    icon: Icons.whatshot_outlined,
-                    subtitle: 'Expect nonsense',
-                    color: gold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 22),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                navIcon('RANKS', Icons.leaderboard_outlined, 'leaderboard'),
-                navIcon('PROFILE', Icons.person_outline, 'profile'),
-                navIcon('SETTINGS', Icons.tune, 'settings'),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                stat('BEST RUN', '${save.number('bestRawRun')}'),
-                const SizedBox(width: 40),
-                stat('LIFETIME', '${save.number('lifetimeTaps')}'),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'SIMPLE AT FIRST. RIDICULOUS FOREVER.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 8, color: muted, letterSpacing: 1.6),
-            ),
-          ],
+              ),
+            );
+          },
         ),
       ),
     ),
   );
-  Widget navIcon(String title, IconData icon, String route) => TextButton(
-    onPressed: () => navigate(route),
-    child: Column(
-      children: [
-        Icon(icon, color: muted, size: 22),
-        const SizedBox(height: 6),
-        Text(title, style: const TextStyle(color: muted, fontSize: 9)),
-      ],
+  Widget buildPage() => switch (page) {
+    'menu' => MainMenuScreen(
+      onPlay: () => start(GameMode.casual),
+      onNavigate: navigate,
+      glow: save.flag('reduceMotion', false) ? 0 : animation.value,
     ),
-  );
-  Widget tag(String text, Color color) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-    decoration: BoxDecoration(
-      color: color.withValues(alpha: .08),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: color.withValues(alpha: .2)),
+    'play' => play(),
+    'campaign' => CampaignScreen(
+      save: save,
+      onNavigate: navigate,
+      onStart: (mode, stage) => start(mode, stage: stage),
     ),
-    child: Text(
-      text,
-      style: TextStyle(color: color, fontSize: 9, letterSpacing: 1),
+    'chaos' => ChaosIntroScreen(
+      onStart: () => start(GameMode.chaos),
+      onBack: () => navigate('menu'),
     ),
-  );
-  Widget stat(String label, String value) => Column(
-    children: [
-      Text(
-        value,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      const SizedBox(height: 4),
-      Text(
-        label,
-        style: const TextStyle(color: muted, fontSize: 9, letterSpacing: 1),
-      ),
-    ],
-  );
-  Widget button(
-    String title,
-    VoidCallback? onTap, {
-    IconData? icon,
-    Color color = cyan,
-    String? subtitle,
-  }) => FilledButton(
-    onPressed: onTap,
-    style: FilledButton.styleFrom(
-      backgroundColor: color.withValues(alpha: .11),
-      foregroundColor: color,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-        side: BorderSide(color: color.withValues(alpha: .4)),
-      ),
+    'profile' => ProfileScreen(
+      save: save,
+      cloud: cloud,
+      onNavigate: navigate,
+      fixture: preview,
     ),
-    child: Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 20),
-              const SizedBox(width: 7),
-            ],
-            Flexible(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          ],
-        ),
-        if (subtitle != null) ...[
-          const SizedBox(height: 7),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 9, color: color.withValues(alpha: .65)),
-          ),
-        ],
-      ],
+    'settings' => SettingsScreen(
+      save: save,
+      cloud: cloud,
+      audio: audio,
+      ads: ads,
+      onNavigate: navigate,
     ),
-  );
+    'leaderboard' => LeaderboardScreen(
+      save: save,
+      cloud: cloud,
+      onNavigate: navigate,
+      fixture: preview,
+    ),
+    'skins' || 'achievements' => CollectionScreen(
+      save: save,
+      onNavigate: navigate,
+      achievements: page == 'achievements',
+      fixture: preview,
+    ),
+    'account' => AccountScreen(
+      save: save,
+      cloud: cloud,
+      ads: ads,
+      onNavigate: navigate,
+    ),
+    'privacy' ||
+    'terms' => LegalScreen(privacy: page == 'privacy', onNavigate: navigate),
+    'gallery' => gallery(),
+    _ => MainMenuScreen(
+      onPlay: () => start(GameMode.casual),
+      onNavigate: navigate,
+    ),
+  };
   Widget play() {
     final s = session!;
-    final next = milestones.keys.firstWhere(
-      (n) => n > s.rawTaps,
-      orElse: () => 100000,
-    );
-    return Column(
+    return Stack(
       children: [
-        Container(
-          padding: const EdgeInsets.fromLTRB(20, 10, 12, 12),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xff18364f), Color(0xff172741)],
+        Positioned.fill(
+          child: ArcadeBackground(
+            child: Column(
+              children: [
+                GameplayHud(
+                  session: s,
+                  best: save.number('bestScore'),
+                  onPause: pause,
+                ),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      applyFixture(constraints.biggest);
+                      return Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Listener(
+                              key: const ValueKey('playable-arena'),
+                              behavior: HitTestBehavior.opaque,
+                              onPointerDown: (e) => tap(e.localPosition),
+                              child: GameWidget(game: game!),
+                            ),
+                          ),
+                          if (s.mode == GameMode.casual)
+                            Positioned.fill(
+                              child: IgnorePointer(
+                                child: AnimatedOpacity(
+                                  opacity:
+                                      s.rawTaps == 0 ||
+                                          scenario == '02_casual_gameplay'
+                                      ? 1
+                                      : 0,
+                                  duration: save.flag('reduceMotion', false)
+                                      ? Duration.zero
+                                      : const Duration(milliseconds: 220),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 40),
+                                      Text(
+                                        'TAP ANYWHERE!',
+                                        style: ArcadeTypography.display
+                                            .copyWith(
+                                              fontSize: 30,
+                                              fontStyle: FontStyle.italic,
+                                              shadows: const [
+                                                Shadow(
+                                                  color: Color(0xff1494ff),
+                                                  blurRadius: 15,
+                                                ),
+                                              ],
+                                            ),
+                                      ),
+                                      Expanded(
+                                        child: Center(
+                                          child: TutorialTapArtwork(
+                                            size: math.min(
+                                              330,
+                                              constraints.maxWidth - 28,
+                                            ),
+                                            reduced: save.flag(
+                                              'reduceMotion',
+                                              false,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (scenario == '03_transition_warning' ||
+                              scenario == '04_target_mode')
+                            Positioned(
+                              left: s.zones.active.center.dx - 9,
+                              top: s.zones.active.center.dy - 2,
+                              width: 104,
+                              height: 114,
+                              child: IgnorePointer(
+                                child: Image.asset(
+                                  'assets/art/characters/tutorial_hand.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          if (notice.isNotEmpty &&
+                              s.ages[s.highest] != null &&
+                              s.ages[s.highest]! < 3)
+                            Positioned(
+                              left: 18,
+                              right: 18,
+                              bottom: 12,
+                              child: IgnorePointer(
+                                child: NeonPanel(
+                                  borderColor: ArcadeColors.yellow,
+                                  padding: const EdgeInsets.all(12),
+                                  child: Text(
+                                    notice,
+                                    textAlign: TextAlign.center,
+                                    style: ArcadeTypography.display.copyWith(
+                                      color: ArcadeColors.yellow,
+                                      fontSize: 23,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                MilestoneCard(session: s),
+                BannerAdSlot(
+                  preview: preview,
+                  child: s.state == RunState.playing
+                      ? ads.banner()
+                      : const SizedBox(width: 320, height: 50),
+                ),
+              ],
             ),
           ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    s.mode.name.toUpperCase(),
-                    style: const TextStyle(
-                      color: cyan,
-                      fontSize: 10,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    'BEST ${save.number('bestRawRun')}',
-                    style: const TextStyle(color: muted, fontSize: 10),
-                  ),
-                  IconButton(
-                    onPressed: pause,
-                    tooltip: 'Pause',
-                    icon: const Icon(Icons.pause_rounded, color: cyan),
-                  ),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '${s.score}',
-                    style: TextStyle(
-                      fontSize: 48,
-                      height: 1,
-                      color: s.rawTaps >= 10000 ? gold : Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: tag('×${s.multiplier}', gold),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${s.rawTaps} RAW TAPS',
-                    style: const TextStyle(color: muted, fontSize: 9),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: s.grace > 0 ? 1 : s.remaining / 1.5,
-                  minHeight: 5,
-                  color: s.remaining < .6 ? const Color(0xffff7b91) : cyan,
-                  backgroundColor: Colors.white10,
-                ),
-              ),
-              const SizedBox(height: 9),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    s.grace > 0
-                        ? 'GET READY'
-                        : s.precision
-                        ? 'TAP THE GLOWING ZONE'
-                        : 'EVERY TAP RESETS 1.5s',
-                    style: const TextStyle(fontSize: 8, color: muted),
-                  ),
-                  Text(
-                    s.mode == GameMode.campaign
-                        ? 'STAGE ${s.stage + 1} · ${s.rawTaps}/${s.goal}'
-                        : 'NEXT: $next',
-                    style: const TextStyle(fontSize: 8, color: muted),
-                  ),
-                ],
-              ),
-            ],
-          ),
         ),
-        Expanded(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Listener(
-                  behavior: HitTestBehavior.opaque,
-                  onPointerDown: (e) => tap(e.localPosition),
-                  child: GameWidget(game: game!),
-                ),
-              ),
-              if (notice.isNotEmpty &&
-                  s.ages[s.highest] != null &&
-                  s.ages[s.highest]! < 4)
-                Positioned(
-                  top: 18,
-                  left: 12,
-                  right: 12,
-                  child: IgnorePointer(
+        if (s.state == RunState.paused)
+          Positioned.fill(
+            child: ColoredBox(
+              color: const Color(0xed050a24),
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(30),
+                  child: NeonPanel(
+                    borderColor: ArcadeColors.cyan,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        tag(notice, gold),
-                        if (s.highest == 700)
-                          const Text(
-                            'Sponsored by absolutely nobody.',
-                            style: TextStyle(color: gold, fontSize: 10),
-                          ),
-                        if (s.highest == 50000)
-                          const Text(
-                            'We did not expect you to get here.',
-                            style: TextStyle(color: gold, fontSize: 10),
-                          ),
+                        const Icon(
+                          Icons.pause_circle_outline,
+                          size: 60,
+                          color: ArcadeColors.cyan,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          reviveReady ? 'READY TO RETURN?' : 'QUEST PAUSED',
+                          textAlign: TextAlign.center,
+                          style: ArcadeTypography.title(32),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Your run is safe. Take a breather.',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 26),
+                        ArcadeButton(
+                          label: reviveReady ? 'READY — RESUME' : 'RESUME',
+                          onPressed: resume,
+                          style: ArcadeButtonStyle.blue,
+                        ),
+                        const SizedBox(height: 14),
+                        ArcadeButton(
+                          label: 'MAIN MENU',
+                          onPressed: () => navigate('menu'),
+                        ),
                       ],
                     ),
                   ),
                 ),
-              if (s.state != RunState.playing)
-                Positioned.fill(
-                  child: Container(
-                    color: const Color(0xff080e21),
-                    alignment: Alignment.center,
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(26),
-                      child: s.state == RunState.paused
-                          ? pausePanel()
-                          : overPanel(),
-                    ),
+              ),
+            ),
+          ),
+        if (s.state == RunState.over || s.state == RunState.won)
+          Positioned.fill(
+            child: GameOverOverlay(
+              session: s,
+              preview: preview,
+              rewardReady: preview || ads.rewardedReady,
+              busy: busy,
+              rewardMessage: rewardMessage.isNotEmpty
+                  ? rewardMessage
+                  : switch (ads.rewardState.value) {
+                      RewardAdState.loading => 'Loading rewarded ad…',
+                      RewardAdState.failed =>
+                        'Ad failed to load. Try again when available.',
+                      RewardAdState.cancelled => 'Ad closed without a reward.',
+                      _ => '',
+                    },
+              onRevive: preview
+                  ? () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Preview only — no ads or rewards requested.',
+                        ),
+                      ),
+                    )
+                  : revive,
+              onRetry: () => action(() async {
+                final won = s.state == RunState.won;
+                if (won && !preview) await ads.stageBreak();
+                if (services) await cloud.event('game_restarted');
+                if (!mounted) return;
+                start(s.mode, stage: won ? math.min(49, s.stage + 1) : s.stage);
+              }),
+              onMenu: () => navigate('menu'),
+              onShare: () => action(() async {
+                await SharePlus.instance.share(
+                  ShareParams(
+                    text:
+                        'I survived ${s.rawTaps} taps in Touch Quest. Think your finger can beat mine? ${const String.fromEnvironment('GAME_URL')}',
+                  ),
+                );
+              }),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget gallery() => ArcadeBackground(
+    child: Column(
+      children: [
+        ArcadeHeader(title: 'UI GALLERY', onBack: () => navigate('menu')),
+        const Padding(
+          padding: EdgeInsets.all(12),
+          child: Text(
+            'DEVELOPER PREVIEW · ISOLATED MEMORY DATA',
+            style: TextStyle(color: ArcadeColors.cyan, fontSize: 13),
+          ),
+        ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              for (final entry in uiScenarios.entries)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: ArcadeButton(
+                    label: entry.value.toUpperCase(),
+                    onPressed: () {
+                      selectScenario(entry.key);
+                      refresh();
+                    },
                   ),
                 ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget pausePanel() => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      const Icon(Icons.pause_circle_outline, color: cyan, size: 56),
-      const SizedBox(height: 16),
-      const Text(
-        'TAKE A BREATHER',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 22,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      const SizedBox(height: 10),
-      const Text('Your run is safely paused.', textAlign: TextAlign.center),
-      const SizedBox(height: 24),
-      button('RESUME', resume),
-      const SizedBox(height: 12),
-      button('MAIN MENU', () => navigate('menu'), color: muted),
-    ],
-  );
-  Widget overPanel() {
-    final s = session!;
-    final won = s.state == RunState.won;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        tag(won ? 'FINGER PROMOTED' : 'RUN COMPLETE', gold),
-        const SizedBox(height: 15),
-        Text(
-          won ? 'QUEST CLEARED' : 'GAME OVER',
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          '${s.rawTaps}',
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: cyan,
-            fontSize: 58,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const Text(
-          'REAL. PHYSICAL. TAPS.',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: muted, fontSize: 9, letterSpacing: 2),
-        ),
-        const SizedBox(height: 18),
-        Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          spacing: 22,
-          runSpacing: 12,
-          children: [
-            stat('SCORE', '${s.score}'),
-            stat('SECONDS', s.duration.toStringAsFixed(1)),
-            stat('TAPS / SEC', s.tapRate.toStringAsFixed(1)),
-            stat('BEST', '${save.number('bestRawRun')}'),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Text(
-          s.highest > 0 ? milestones[s.highest]! : s.reason,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: gold, fontSize: 10),
-        ),
-        if (s.reviveCount > 0)
-          const Padding(
-            padding: EdgeInsets.only(top: 10),
-            child: Text(
-              'REVIVED RUN · UNRANKED',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: muted, fontSize: 9),
-            ),
-          ),
-        const SizedBox(height: 22),
-        if (!won && s.reviveCount == 0) ...[
-          button(
-            ads.rewardedReady
-                ? 'WATCH AD TO REVIVE'
-                : 'REVIVE · NO AD AVAILABLE',
-            ads.rewardedReady && !busy
-                ? () => action(() async {
-                    await cloud.event('revive_offered');
-                    final earned = await ads.reward();
-                    if (s.revive(rewarded: earned)) {
-                      finished = false;
-                      audio.sound('revive');
-                      await cloud.event('revive_completed');
-                      await audio.music(true);
-                    }
-                    refresh();
-                  })
-                : null,
-            color: gold,
-          ),
-          const SizedBox(height: 10),
-        ],
-        button(
-          won && s.stage < 49 ? 'NEXT STAGE' : 'TRY AGAIN',
-          () => action(() async {
-            if (won) await ads.stageBreak();
-            await cloud.event('game_restarted');
-            start(s.mode, stage: won ? min(49, s.stage + 1) : s.stage);
-          }),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: button('MAIN MENU', () => navigate('menu'), color: muted),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: button(
-                'SHARE',
-                () => action(() async {
-                  await SharePlus.instance.share(
-                    ShareParams(
-                      text:
-                          'I survived ${s.rawTaps} taps in Touch Quest. Think your finger can beat mine? ${const String.fromEnvironment('GAME_URL')}',
-                    ),
-                  );
-                }),
-                color: muted,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget subpage() => Column(
-    children: [
-      Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: () => navigate('menu'),
-              icon: const Icon(Icons.arrow_back, color: cyan),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              page.toUpperCase(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-            ),
-          ],
-        ),
-      ),
-      Expanded(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
-          child: switch (page) {
-            'campaign' => campaign(),
-            'settings' => settings(),
-            'profile' => profile(),
-            'leaderboard' => leaderboard(),
-            'skins' => skins(),
-            _ => legal(),
-          },
-        ),
-      ),
-    ],
-  );
-  Widget campaign() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      const Text(
-        '50 QUESTS. ONE VERY BUSY FINGER.',
-        style: TextStyle(color: muted, fontSize: 10),
-      ),
-      const SizedBox(height: 20),
-      for (var world = 0; world < worlds.length; world++) ...[
-        Text(
-          '${world + 1}. ${worlds[world]}',
-          style: TextStyle(
-            color: world % 2 == 0 ? cyan : gold,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            for (var i = 0; i < 5; i++)
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(3),
-                  child: button(
-                    '${world * 5 + i + 1}',
-                    world * 5 + i <= save.number('campaign')
-                        ? () => start(GameMode.campaign, stage: world * 5 + i)
-                        : null,
-                    color: world * 5 + i < save.number('campaign')
-                        ? gold
-                        : cyan,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 22),
-      ],
-    ],
-  );
-  Widget toggle(String key, String title, {bool fallback = true}) =>
-      SwitchListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Text(title, style: const TextStyle(fontSize: 13)),
-        value: save.flag(key, fallback),
-        onChanged: (v) {
-          unawaited(save.set(key, v));
-          if (key == 'music') unawaited(audio.music(false));
-          if (key == 'analytics') unawaited(cloud.setAnalytics(v));
-        },
-      );
-  Widget choose(
-    String key,
-    String title,
-    List<String> values,
-    String initial,
-  ) => ListTile(
-    contentPadding: EdgeInsets.zero,
-    title: Text(title, style: const TextStyle(fontSize: 13)),
-    trailing: DropdownButton<String>(
-      value: save.choice(key, initial),
-      items: values
-          .map(
-            (v) => DropdownMenuItem(
-              value: v,
-              child: Text(
-                v.toUpperCase(),
-                style: const TextStyle(fontSize: 11),
-              ),
-            ),
-          )
-          .toList(),
-      onChanged: (v) => save.set(key, v),
     ),
   );
-  Widget settings() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      tag('MAKE YOUR OWN KIND OF CHAOS', cyan),
-      const SizedBox(height: 15),
-      toggle('music', 'Music'),
-      toggle('sfx', 'Sound effects'),
-      toggle('haptics', 'Haptics'),
-      choose('intensity', 'Haptic intensity', [
-        'low',
-        'normal',
-        'high',
-      ], 'normal'),
-      const Divider(),
-      toggle('reduceMotion', 'Reduce motion', fallback: false),
-      toggle('reduceFlashing', 'Reduce flashing'),
-      choose('quality', 'Effects quality', ['auto', 'low', 'high'], 'auto'),
-      toggle('analytics', 'Optional gameplay analytics', fallback: false),
-      const ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Text('Notifications', style: TextStyle(fontSize: 13)),
-        subtitle: Text(
-          'Coming in a future quest',
-          style: TextStyle(fontSize: 10),
-        ),
-      ),
-      const Divider(),
-      ListTile(
-        title: const Text('Account'),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => navigate('profile'),
-      ),
-      ListTile(
-        title: const Text('Ad privacy choices'),
-        onTap: () => action(ads.privacyOptions),
-      ),
-      ListTile(
-        title: const Text('Privacy policy'),
-        onTap: () => navigate('privacy'),
-      ),
-      ListTile(
-        title: const Text('Terms of service'),
-        onTap: () => navigate('terms'),
-      ),
-      TextButton(
-        onPressed: () => action(cloud.signOut),
-        child: const Text('SIGN OUT'),
-      ),
-      TextButton(
-        onPressed: () => action(() async {
-          final confirmed = await showDialog<bool>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text('Delete account?'),
-              content: const Text(
-                'This removes your account and local progress. This cannot be undone.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx, false),
-                  child: const Text('CANCEL'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx, true),
-                  child: const Text('DELETE'),
-                ),
-              ],
-            ),
-          );
-          if (confirmed == true) await cloud.deleteAccount();
-        }),
-        child: const Text(
-          'DELETE ACCOUNT',
-          style: TextStyle(color: Color(0xffff8f9e)),
-        ),
-      ),
-      const SizedBox(height: 16),
-      const Text(
-        'TOUCH QUEST · 1.0.0\nOriginal sounds. Original nonsense.',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 10, color: muted),
-      ),
-    ],
-  );
-  Widget profile() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Center(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: save.badges.contains(100000)
-                  ? gold.withValues(
-                      alpha: save.flag('reduceMotion', false)
-                          ? 1
-                          : .55 + animation.value * .45,
-                    )
-                  : cyan.withValues(alpha: .2),
-              width: 3,
-            ),
-            boxShadow: save.badges.contains(100000)
-                ? [
-                    BoxShadow(
-                      color: gold.withValues(alpha: .15),
-                      blurRadius: 24,
-                    ),
-                  ]
-                : [],
-          ),
-          child: Icon(
-            save.badges.contains(100000)
-                ? Icons.workspace_premium
-                : Icons.person_pin,
-            color: gold,
-            size: 78,
-          ),
-        ),
-      ),
-      const SizedBox(height: 14),
-      Text(
-        cloud.name,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 22, color: Colors.white),
-      ),
-      Text(
-        save.badges.contains(100000)
-            ? 'TAP GOD'
-            : save.badges.contains(1000)
-            ? '1,000 TAP CLUB'
-            : 'APPRENTICE OF THE TAP',
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: gold, fontSize: 11),
-      ),
-      const SizedBox(height: 24),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          stat('LIFETIME', '${save.number('lifetimeTaps')}'),
-          stat('BEST RUN', '${save.number('bestRawRun')}'),
-        ],
-      ),
-      const SizedBox(height: 24),
-      Text(
-        cloud.status,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 10),
-      ),
-      const SizedBox(height: 18),
-      button('CONTINUE AS GUEST', () => navigate('menu')),
-      const SizedBox(height: 10),
-      button(
-        'CONTINUE WITH GOOGLE',
-        busy ? null : () => action(() => cloud.signIn(true)),
-        color: muted,
-      ),
-      const SizedBox(height: 10),
-      button(
-        'CONTINUE WITH FACEBOOK',
-        busy ? null : () => action(() => cloud.signIn(false)),
-        color: muted,
-      ),
-      const SizedBox(height: 16),
-      button('TAP COSMETICS', () => navigate('skins'), color: gold),
-      const SizedBox(height: 24),
-      const Text('ACHIEVEMENTS', style: TextStyle(color: cyan)),
-      const SizedBox(height: 10),
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          for (final n in save.badges) tag(milestones[n] ?? '$n', gold),
-          if (save.badges.isEmpty)
-            const Text('Your first badge is 100 taps away.'),
-        ],
-      ),
-    ],
-  );
-  Widget skins() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      const Text('Earn effects with real taps. No purchase required.'),
-      const SizedBox(height: 24),
-      button('ELECTRIC CYAN', () => save.set('skin', 'cyan')),
-      const SizedBox(height: 12),
-      button(
-        save.badges.contains(5000)
-            ? 'GOLDEN TOUCH'
-            : 'GOLDEN TOUCH · 5,000 TAPS',
-        save.badges.contains(5000) ? () => save.set('skin', 'gold') : null,
-        color: gold,
-      ),
-    ],
-  );
-  Widget leaderboard() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      tag('RAW SKILL. REAL FINGERS.', cyan),
-      const SizedBox(height: 16),
-      const Text(
-        'Global rankings use server-validated runs. Revived runs are unranked.',
-        style: TextStyle(fontSize: 11),
-      ),
-      const SizedBox(height: 18),
-      for (final category in ['rawTaps', 'score', 'campaign', 'hallOfFame'])
-        ExpansionTile(
-          title: Text(switch (category) {
-            'rawTaps' => 'Global best raw run',
-            'score' => 'Global best score',
-            'campaign' => 'Campaign progress',
-            _ => 'Hall of Fame',
-          }, style: const TextStyle(fontSize: 13)),
-          children: [
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: cloud.leaderboard(category),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const LinearProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return const Text('Rankings unavailable. Try again later.');
-                }
-                final entries = snapshot.data ?? [];
-                return entries.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Text(
-                          'No verified entries yet.',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                      )
-                    : Column(
-                        children: [
-                          for (final e in entries)
-                            ListTile(
-                              title: Text(e['displayName'] ?? 'Adventurer'),
-                              trailing: Text('${e['value']}'),
-                            ),
-                        ],
-                      );
-              },
-            ),
-          ],
-        ),
-      const SizedBox(height: 20),
-      const Text(
-        'YOUR DEVICE · RECENT RUNS',
-        style: TextStyle(color: gold, fontSize: 11),
-      ),
-      for (final r in save.runs.take(10))
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            '${r['rawTaps']} raw taps',
-            style: const TextStyle(fontSize: 13),
-          ),
-          subtitle: Text(
-            '${r['mode']} · ${r['reviveCount'] == 0 ? 'unverified' : 'revived'}',
-            style: const TextStyle(fontSize: 10),
-          ),
-          trailing: Text('${r['score']} pts'),
-        ),
-      const SizedBox(height: 15),
-      const Text(
-        'Friends leaderboards: future update.',
-        style: TextStyle(fontSize: 10),
-      ),
-    ],
-  );
-  Widget legal() => Text(
-    page == 'privacy' ? privacyText : termsText,
-    style: const TextStyle(fontSize: 13, height: 1.8, color: muted),
-  );
 }
-
-const privacyText =
-    'PRIVACY POLICY — DRAFT\n\nOwner: [LEGAL OWNER]\nContact: [SUPPORT EMAIL]\nEffective: [EFFECTIVE DATE]\nJurisdiction: [COUNTRY / STATE]\n\nTouch Quest stores settings, gameplay statistics, achievements and recent runs on your device. Guest play works without registration. When configured, Firebase Authentication processes account identifiers and optional Google or Facebook profile information. Linked accounts can sync progress to Cloud Firestore. Public leaderboards display a chosen name and validated gameplay statistics.\n\nOptional Firebase Analytics is off by default. It collects aggregate run and milestone events only when enabled. Google Mobile Ads may process device identifiers and advertising interaction data after applicable consent. Provider privacy terms also apply. Web advertising is not configured. Fake comedy advertisements are game effects and collect no ad impressions.\n\nYou can change preferences, sign out, or request account deletion in Settings. Account deletion requires recent authentication and removes local data; configured server cleanup removes cloud records. Retention: [DEFINE RETENTION PERIOD]. Regional privacy rights and children’s privacy requirements: [COMPLETE BEFORE RELEASE].\n\nThis draft describes intended configured services, not legal advice. The owner must complete and review this policy before publication.';
-const termsText =
-    'TERMS OF SERVICE — DRAFT\n\nOwner: [LEGAL OWNER]\nContact: [SUPPORT EMAIL]\nEffective: [EFFECTIVE DATE]\nJurisdiction: [COUNTRY / STATE]\n\nTouch Quest is an arcade game provided for personal entertainment. You may play as a guest. Online services require a connection and may be unavailable. Do not manipulate input, submit fabricated scores, abuse accounts or interfere with other players. Rankings may exclude unverified or revived runs.\n\nRewarded ads are optional. Revives are granted only after a successful reward callback and may be unavailable. No purchases are implemented. Original game art and audio belong to the project owner, subject to applicable third-party software licenses.\n\nTake breaks and use the motion, flashing and haptic settings that suit you. Account deletion removes local progress and requests removal of cloud data.\n\nWarranty, liability, dispute procedures, age eligibility and applicable local consumer rights: [OWNER AND COUNSEL TO COMPLETE]. This is a draft, not legal advice. Review before public release.';

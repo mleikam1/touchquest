@@ -15,7 +15,7 @@ class FirebaseService {
   String status = 'Offline guest · saved on this device';
   static const enabled = bool.fromEnvironment('FIREBASE_ENABLED');
   Future<void> init() async {
-    if (!enabled) return;
+    if (!enabled || save.prefs == null) return;
     try {
       await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -43,9 +43,36 @@ class FirebaseService {
     }
   }
 
-  String get name => available
-      ? FirebaseAuth.instance.currentUser?.displayName ?? 'Guest adventurer'
-      : 'Guest adventurer';
+  String get name => save.choice(
+    'displayName',
+    available
+        ? FirebaseAuth.instance.currentUser?.displayName ?? 'Guest adventurer'
+        : 'Guest adventurer',
+  );
+  String? get currentUserId =>
+      available ? FirebaseAuth.instance.currentUser?.uid : null;
+  bool get isLinkedAccount =>
+      available &&
+      FirebaseAuth.instance.currentUser != null &&
+      !FirebaseAuth.instance.currentUser!.isAnonymous;
+
+  Future<void> updateDisplayName(String value) async {
+    final cleaned = value.trim();
+    if (cleaned.isEmpty || cleaned.length > 24) {
+      throw ArgumentError('Choose a name between 1 and 24 characters.');
+    }
+    await save.set('displayName', cleaned);
+    if (!available) return;
+    try {
+      await FirebaseAuth.instance.currentUser?.updateDisplayName(cleaned);
+      await sync();
+      status = 'Profile synced';
+    } catch (_) {
+      status = 'Name saved on this device; cloud sync failed.';
+      rethrow;
+    }
+  }
+
   Future<void> signIn(bool google) async {
     if (!available) {
       throw StateError(

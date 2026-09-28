@@ -1,0 +1,70 @@
+{
+  "source": "touch_quest_master.png",
+  "source_pixels": [
+    1146,
+    1210
+  ],
+  "crop_bounds_left_top_right_bottom": {
+    "01_main_menu": [
+      22,
+      47,
+      235,
+      510
+    ],
+    "02_casual_gameplay": [
+      246,
+      47,
+      459,
+      510
+    ],
+    "03_transition_warning": [
+      470,
+      47,
+      683,
+      510
+    ],
+    "04_target_mode": [
+      693,
+      47,
+      906,
+      510
+    ],
+    "05_game_over": [
+      915,
+      47,
+      1129,
+      510
+    ],
+    "06_campaign_map": [
+      22,
+      560,
+      235,
+      1004
+    ],
+    "07_chaos_entry": [
+      246,
+      560,
+      459,
+      1004
+    ],
+    "08_profile": [
+      470,
+      560,
+      683,
+      1004
+    ],
+    "09_settings": [
+      693,
+      560,
+      906,
+      1004
+    ],
+    "10_leaderboards": [
+      915,
+      560,
+      1129,
+      1004
+    ]
+  },
+  "note": "Crops preserve the supplied phone mockup frames. Do not implement frames or notches as app UI. No new artwork was generated."
+}

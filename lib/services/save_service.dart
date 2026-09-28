@@ -7,15 +7,22 @@ import '../game/core/game_session.dart';
 class SaveService extends ChangeNotifier {
   SaveService(this.prefs) {
     data =
-        jsonDecode(prefs.getString('touchquest.v1') ?? '{}')
+        jsonDecode(prefs!.getString('touchquest.v1') ?? '{}')
             as Map<String, dynamic>;
   }
-  final SharedPreferences prefs;
+
+  /// Isolated preview/test state. This store can never write to device storage.
+  SaveService.memory([Map<String, dynamic> values = const {}]) : prefs = null {
+    data = Map<String, dynamic>.from(jsonDecode(jsonEncode(values)) as Map);
+  }
+  final SharedPreferences? prefs;
   late Map<String, dynamic> data;
   bool flag(String key, [bool fallback = true]) =>
       data[key] as bool? ?? fallback;
   String choice(String key, String fallback) =>
       data[key] as String? ?? fallback;
+  double volume(String key, [double fallback = .35]) =>
+      ((data[key] as num?)?.toDouble() ?? fallback).clamp(0.0, 1.0);
   int number(String key) => (data[key] as num?)?.toInt() ?? 0;
   List<int> get badges => (data['badges'] as List? ?? []).cast<int>();
   List<Map<String, dynamic>> get runs => (data['runs'] as List? ?? [])
@@ -28,7 +35,7 @@ class SaveService extends ChangeNotifier {
   }
 
   Future<void> persist() async {
-    await prefs.setString('touchquest.v1', jsonEncode(data));
+    await prefs?.setString('touchquest.v1', jsonEncode(data));
   }
 
   Future<void> record(GameSession s, int alreadySaved) async {
