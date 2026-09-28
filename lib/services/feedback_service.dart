@@ -29,15 +29,16 @@ class FeedbackService {
         'menu',
       ]) {
         if (disposed) return;
-        pools[n] = await FlameAudio.createPool(
+        final pool = await FlameAudio.createPool(
           '$n.wav',
           maxPlayers: 4,
           minPlayers: 1,
         );
         if (disposed) {
-          await pools[n]!.dispose();
+          await pool.dispose();
           return;
         }
+        pools[n] = pool;
       }
       ready = true;
     } catch (e) {
@@ -46,8 +47,8 @@ class FeedbackService {
   }
 
   void sound(String name) {
-    if (!save.flag('sfx') || !ready) return;
-    unawaited(pools[name]?.start(volume: .35));
+    if (disposed || !save.flag('sfx') || !ready) return;
+    unawaited(pools[name]?.start(volume: save.volume('sfxVolume')));
   }
 
   void tap(int raw, {bool funny = false}) {
@@ -71,12 +72,12 @@ class FeedbackService {
   }
 
   Future<void> music(bool playing, {bool overdrive = false}) async {
-    if (!ready) return;
+    if (!ready || disposed) return;
     try {
       if (playing && save.flag('music')) {
         await FlameAudio.bgm.play(
           overdrive ? 'overdrive.wav' : 'music.wav',
-          volume: .12,
+          volume: save.volume('musicVolume', .12),
         );
       } else {
         await FlameAudio.bgm.pause();
@@ -86,11 +87,22 @@ class FeedbackService {
     }
   }
 
+  Future<void> updateVolume(String key, double value) async {
+    await save.set(key, value.clamp(0.0, 1.0));
+    await save.set(key == 'musicVolume' ? 'music' : 'sfx', value > 0);
+    if (key == 'musicVolume' && ready && !disposed) {
+      await FlameAudio.bgm.audioPlayer.setVolume(save.volume(key, .12));
+    }
+  }
+
   Future<void> dispose() async {
     disposed = true;
     haptics.cancel();
-    await FlameAudio.bgm.stop();
-    for (final pool in pools.values) {
+    if (ready) await FlameAudio.bgm.stop();
+    final activePools = pools.values.toList();
+    pools.clear();
+    ready = false;
+    for (final pool in activePools) {
       await pool.dispose();
     }
   }

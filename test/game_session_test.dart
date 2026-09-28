@@ -45,6 +45,10 @@ void main() {
     expect(s.score, 1);
     expect(s.rawTaps, 1);
     expect(s.grace, 2);
+    expect(s.state, RunState.paused);
+    s.update(20);
+    expect(s.remaining, 1.5);
+    s.resume();
     s.update(2);
     expect(s.remaining, 1.5);
     s.update(2);
@@ -85,17 +89,24 @@ void main() {
     }
     expect(s.state, RunState.won);
   });
-  test('Targets stay entirely in field, never in banner across stages', () {
+  test('All fixed preview geometry stays inside the bounded arena', () {
     for (var stage = 0; stage < 50; stage++) {
       final s = GameSession(mode: GameMode.campaign, stage: stage);
       s.resize(320, 380);
-      for (var i = 0; i < 200; i++) {
-        s.moveTarget();
-        s.update(.001);
-        expect(s.target.dx - s.radius, greaterThanOrEqualTo(0));
-        expect(s.target.dx + s.radius, lessThanOrEqualTo(320));
-        expect(s.target.dy - s.radius, greaterThanOrEqualTo(0));
-        expect(s.target.dy + s.radius, lessThanOrEqualTo(380));
+      for (var i = 0; i < 20; i++) {
+        s.zones.startPreview();
+        for (final zone in [s.zones.active, s.zones.next!]) {
+          expect(zone.left, greaterThanOrEqualTo(0));
+          expect(zone.right, lessThanOrEqualTo(320));
+          expect(zone.top, greaterThanOrEqualTo(0));
+          expect(zone.bottom, lessThanOrEqualTo(380));
+          expect(zone.width, greaterThanOrEqualTo(88));
+          expect(zone.height, greaterThanOrEqualTo(88));
+        }
+        s.zones.update(.6);
+        for (var t = 0; t < 3; t++) {
+          s.zones.acceptedTap();
+        }
       }
     }
   });
@@ -144,10 +155,58 @@ void main() {
     expect(game.colorPulseOpacity(0), isNot(game.colorPulseOpacity(.8)));
     expect(game.pool.length, 240);
   });
+  test(
+    'Frozen renderer keeps deterministic clock, input rings and session',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final save = SaveService(await SharedPreferences.getInstance());
+      final session = GameSession();
+      var frames = 0;
+      final game = TouchQuestGame(
+        session,
+        save,
+        () => frames++,
+        frozen: true,
+        seed: 7,
+        fixtureTime: 1.25,
+      );
+      const input = Offset(123, 234);
+      game.burst(input);
+      final rings = game.pool
+          .where((spark) => spark.ring && spark.life > 0)
+          .toList();
+      expect(rings, hasLength(2));
+      expect(
+        rings.every((spark) => spark.p == input && spark.v == Offset.zero),
+        true,
+      );
+      game.update(30);
+      expect(game.clock, 1.25);
+      expect(session.remaining, 1.5);
+      expect(session.rawTaps, 0);
+      expect(frames, 0);
+      expect(rings.every((spark) => spark.life == .45), true);
+      final particleBefore = game.pool[2].p;
+      game.previewEffectsAt(.16);
+      expect(game.pool[2].p, isNot(particleBefore));
+      expect(rings.every((spark) => spark.p == input), true);
+      expect(rings.first.life, closeTo(.29, .00001));
+      expect(game.pool.length, 240);
+      expect(session.duration, 0);
+      expect(session.rawTaps, 0);
+      expect(game.clock, 1.25);
+      expect(frames, 0);
+      await save.set('skin', 'magenta');
+      expect(game.accent, TouchQuestGame.magenta);
+      await save.set('reduceMotion', true);
+      expect(game.reduced, true);
+    },
+  );
   test('Revive grace consumes only its share of a long update', () {
     final s = GameSession();
     s.update(2);
     s.revive(rewarded: true);
+    s.resume();
     s.update(2.5);
     expect(s.grace, 0);
     expect(s.remaining, 1);

@@ -15,7 +15,7 @@ jobs:
       - run: flutter pub get
       - run: dart format --set-exit-if-changed .
       - run: flutter analyze
-      - run: flutter test
+      - run: flutter test --exclude-tags=golden
       - run: flutter build web
       - uses: actions/setup-node@v4
         with:
@@ -23,3 +23,15 @@ jobs:
       - run: node --test firebase/functions/validation.test.js
       - run: npm ci --ignore-scripts --prefix firebase/functions
       - run: node -e "require('./firebase/functions/index.js')"
+
+  goldens:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter test --tags=golden

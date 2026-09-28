@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import '../systems/touch_zone_transition_controller.dart';
 
 enum GameMode { casual, campaign, chaos }
 
@@ -54,12 +55,14 @@ class GameSession {
     this.stage = 0,
     this.velocityPerk = false,
     int seed = 42,
-  }) : random = Random(seed);
+  }) : random = Random(seed),
+       zones = TouchZoneTransitionController(seed: seed, difficulty: stage);
   final String id = DateTime.now().microsecondsSinceEpoch.toString();
   final GameMode mode;
   final int stage;
   final bool velocityPerk;
   final Random random;
+  final TouchZoneTransitionController zones;
   RunState state = RunState.playing;
   int rawTaps = 0, score = 0, reviveCount = 0;
   int paletteIndex = 0, worldIndex = 0;
@@ -74,8 +77,10 @@ class GameSession {
   }
 
   double remaining = 1.5, duration = 0, grace = 0, overdrive = 0;
-  double width = 400, height = 500, radius = 62, phase = 0;
-  Offset target = const Offset(200, 250);
+  double width = 400, height = 500, phase = 0;
+  bool _arenaConfigured = false;
+  Offset get target => zones.active.center;
+  double get radius => min(zones.active.width, zones.active.height) / 2;
   final Set<int> fired = {};
   final Map<int, double> ages = {};
   String reason = 'Your finger took a vacation.';
@@ -86,59 +91,28 @@ class GameSession {
   bool get bossActive =>
       (rawTaps >= 25000 && rawTaps < 25030) ||
       (mode == GameMode.chaos && rawTaps >= 160 && rawTaps % 200 >= 160);
-  bool get precision =>
-      bossActive ||
-      mode == GameMode.campaign ||
-      (mode == GameMode.chaos && rawTaps >= 15) ||
-      (mode == GameMode.casual && rawTaps >= 60 && rawTaps % 80 >= 60);
+  bool get precision => mode != GameMode.casual;
   bool active(int n, double seconds) =>
       ages.containsKey(n) && ages[n]! < seconds;
+
   void resize(double w, double h) {
+    if (w <= 0 || h <= 0) return;
+    final changed = w != width || h != height;
+    // Initial layout configures the arena; subsequent changes require Ready.
+    if (changed && _arenaConfigured && (rawTaps > 0 || duration > 0)) pause();
+    _arenaConfigured = true;
+    if (!changed) return;
     width = w;
     height = h;
-    radius = min(62, min(w, h) / 4);
-    clampTarget();
-  }
-
-  void clampTarget() {
-    target = Offset(
-      target.dx.clamp(radius + 8, max(radius + 8, width - radius - 8)),
-      target.dy.clamp(radius + 8, max(radius + 8, height - radius - 8)),
-    );
-  }
-
-  void moveTarget() {
-    final r = max(34.0, 62 - stage * 0.6 - min(rawTaps / 250, 20));
-    radius = min(r, min(width, height) / 4);
-    // Bounded travel: each relocation remains reachable and entirely in the field.
-    target += Offset(
-      (random.nextDouble() - .5) * 160,
-      (random.nextDouble() - .5) * 180,
-    );
-    clampTarget();
-  }
-
-  bool insideShape(Offset p, Offset center) {
-    final delta = p - center;
-    if (stage % 3 == 1) {
-      return delta.dx.abs() <= radius * .707 && delta.dy.abs() <= radius * .707;
-    }
-    // Hex uses a generous inscribed circular hit zone plus its actual polygon.
-    if (stage % 3 == 2) {
-      final angle = atan2(delta.dy, delta.dx) - pi / 6;
-      final local = (angle + pi / 6) % (pi / 3) - pi / 6;
-      return delta.distance <= radius * cos(pi / 6) / cos(local);
-    }
-    return delta.distance <= radius;
+    zones.resize(Size(w, h));
   }
 
   bool hit(Offset p) =>
-      insideShape(p, target) ||
-      ((stage % 5 == 4 || stage ~/ 5 == 6) && insideShape(p, secondary));
-  Offset get secondary => Offset(width - target.dx, height - target.dy);
+      (Offset.zero & Size(width, height)).contains(p) &&
+      (!precision || zones.accepts(p));
   List<int> tap(Offset position) {
     if (state != RunState.playing) return [];
-    if (precision && !hit(position)) {
+    if (!hit(position)) {
       state = RunState.over;
       reason = 'The glowing zone missed you.';
       return [];
@@ -160,7 +134,15 @@ class GameSession {
         if (n == 500) overdrive = 10;
       }
     }
-    if (precision && (stage % 3 == 0 || rawTaps % 3 == 0)) moveTarget();
+    // Evaluate this pointer once against the old geometry, then switch atomically.
+    if (precision) {
+      if (mode == GameMode.chaos) {
+        // Difficulty only influences the next rectangle that has not been shown.
+        // Never change an active target or the exact bounds of a visible preview.
+        zones.difficulty = min(49, rawTaps ~/ 10);
+      }
+      zones.acceptedTap(position);
+    }
     if (mode == GameMode.campaign && rawTaps >= goal) {
       state = RunState.won;
       reason = 'Stage cleared. Finger promoted.';
@@ -173,6 +155,7 @@ class GameSession {
     dt = min(dt, remaining + grace);
     duration += dt;
     phase += dt;
+    if (precision) zones.update(dt);
     for (final n in ages.keys.toList()) {
       ages[n] = ages[n]! + dt;
     }
@@ -183,14 +166,6 @@ class GameSession {
     if (remaining <= 0) {
       state = RunState.over;
       return;
-    }
-    if (precision && (stage % 3 != 0 || mode != GameMode.campaign)) {
-      final speed = min(95.0, 18 + stage * 2 + rawTaps / 80);
-      target += Offset(
-        cos(phase * .8) * speed * dt,
-        sin(phase * 1.1) * speed * dt,
-      );
-      clampTarget();
     }
   }
 
@@ -207,7 +182,7 @@ class GameSession {
     reviveCount++;
     remaining = 1.5;
     grace = 2;
-    state = RunState.playing;
+    state = RunState.paused;
     return true;
   }
 

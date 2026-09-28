@@ -11,11 +11,11 @@ flutter pub get
 flutter run -d chrome
 ```
 
-- **Endless:** full-field tapping with temporary precision chaos windows.
-- **Campaign:** 50 escalating stages across ten named worlds; move between glowing targets, clear a tap goal and unlock the next stage.
-- **Chaos:** begins forgiving, then adds moving targets, shrinkage, visual decoys and a chasing boss.
+- **Casual / PLAY:** every point in the bounded arena stays valid for the entire run. HUD, milestone footer, and ads never score.
+- **Campaign:** 50 stages across ten worlds; tap fixed rounded touch zones, preview exact upcoming bounds, clear the tap goal, and unlock the next stage.
+- **Chaos:** fixed touch zones, previewed discrete switches, visual ghost rings, and decorative boss events. Accepted hit areas never drift, bounce, or chase.
 
-Original neon Canvas art, exact-location rings, bounded particles, procedural sound effects and music, mobile haptics, 28 milestones through 100,000 taps, guest persistence, cosmetics, accessibility preferences, share-sheet results and optional cloud/ad integrations are included.
+Layered production illustration and neon Canvas art, exact-location rings, bounded particles, procedural sound effects and music, mobile haptics, 28 milestones through 100,000 taps, guest persistence, cosmetics, accessibility preferences, share-sheet results and optional cloud/ad integrations are included.
 
 ## Validate and build
 
@@ -28,6 +28,14 @@ flutter build web
 flutter build apk --debug
 flutter build ios --no-codesign
 ```
+
+To inspect isolated deterministic production UI fixtures in debug mode:
+
+```sh
+flutter run -d chrome --web-port=8080
+```
+
+Open [the local UI gallery](http://localhost:8080/?ui=gallery) in that debug build. The gallery uses in-memory progress, unavailable ads, frozen Flame clocks, seeded randomness, and the same production components. It does not initialize Firebase or write fixture scores to profiles. Release navigation never exposes it.
 
 The static web output is `build/web`; serve it over HTTP. Android APK output is `build/app/outputs/flutter-apk/app-debug.apk`. iOS requires Xcode; unsigned builds do not install on physical devices without signing.
 

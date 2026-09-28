@@ -49,3 +49,6 @@ android/.kotlin/
 firebase/functions/node_modules/
 config/*.json
 !config/example.json
+
+# Reviewed validation evidence for the reference UI implementation
+!docs/ui-review/*.log

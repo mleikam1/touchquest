@@ -1,0 +1,143 @@
+{
+  "note": "Approximate samples from a small illustrated reference; not exact source design tokens. Sample patches avoid text and phone hardware. Original reference files remain unchanged.",
+  "samples": [
+    {
+      "name": "background_navy",
+      "source": "design/reference/screens/09_settings.png",
+      "sample_box_left_top_right_bottom": [
+        40,
+        12,
+        174,
+        20
+      ],
+      "method": "median RGB of manually selected non-text interior patch",
+      "rgb": [
+        0,
+        8,
+        37
+      ],
+      "hex": "#000825",
+      "pixels_sampled": 1072
+    },
+    {
+      "name": "navigation_navy",
+      "source": "design/reference/screens/09_settings.png",
+      "sample_box_left_top_right_bottom": [
+        28,
+        383,
+        112,
+        390
+      ],
+      "method": "median RGB of manually selected non-text interior patch",
+      "rgb": [
+        0,
+        20,
+        53
+      ],
+      "hex": "#001435",
+      "pixels_sampled": 588
+    },
+    {
+      "name": "panel_navy",
+      "source": "design/reference/screens/09_settings.png",
+      "sample_box_left_top_right_bottom": [
+        98,
+        149,
+        110,
+        156
+      ],
+      "method": "median RGB of manually selected non-text interior patch",
+      "rgb": [
+        2,
+        25,
+        64
+      ],
+      "hex": "#021940",
+      "pixels_sampled": 84
+    },
+    {
+      "name": "cyan_slider",
+      "source": "design/reference/screens/09_settings.png",
+      "sample_box_left_top_right_bottom": [
+        116,
+        68,
+        128,
+        70
+      ],
+      "method": "median RGB of manually selected non-text interior patch",
+      "rgb": [
+        64,
+        238,
+        255
+      ],
+      "hex": "#40EEFF",
+      "pixels_sampled": 24
+    },
+    {
+      "name": "haptics_green",
+      "source": "design/reference/screens/09_settings.png",
+      "sample_box_left_top_right_bottom": [
+        161,
+        115,
+        170,
+        120
+      ],
+      "method": "median RGB of manually selected non-text interior patch",
+      "rgb": [
+        23,
+        230,
+        99
+      ],
+      "hex": "#17E663",
+      "pixels_sampled": 45
+    },
+    {
+      "name": "primary_yellow",
+      "source": "design/reference/screens/01_main_menu.png",
+      "sample_box_left_top_right_bottom": [
+        56,
+        186,
+        67,
+        193
+      ],
+      "method": "median RGB of manually selected non-text interior patch",
+      "rgb": [
+        253,
+        197,
+        40
+      ],
+      "hex": "#FDC528",
+      "pixels_sampled": 77
+    },
+    {
+      "name": "primary_orange",
+      "source": "design/reference/screens/01_main_menu.png",
+      "sample_box_left_top_right_bottom": [
+        56,
+        200,
+        67,
+        205
+      ],
+      "method": "median RGB of manually selected non-text interior patch",
+      "rgb": [
+        254,
+        175,
+        24
+      ],
+      "hex": "#FEAF18",
+      "pixels_sampled": 55
+    }
+  ],
+  "reference_crop_insets": {
+    "left": 10,
+    "top": 8,
+    "right": 10,
+    "bottom": 10
+  },
+  "comparison_limitations": [
+    "The upper-row board drawings contain camera notches extending below the eight-pixel inset. Any remaining black notch is reference-only hardware and excluded from fidelity assessment.",
+    "Poster screens have inconsistent aspect ratios. Comparison images preserve each source aspect ratio with letterboxing rather than stretching content.",
+    "Phone corner hardware may remain at the extreme corners after approximate cropping and is excluded from assessment.",
+    "No numerical pixel-diff score is presented as evidence of reference matching."
+  ]
+}

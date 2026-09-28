@@ -1,0 +1,223 @@
+{
+  "captured": 10,
+  "required": 10,
+  "complete": true,
+  "missing": [],
+  "contact_sheet": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/rendered_app_contact_sheet.png",
+  "comparisons": [
+    {
+      "scenario": "01_main_menu",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/01_main_menu.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "42a318f8961e1cbafa93f0f2bee69c79228457d10a1db934de303aa8107a62f7",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/01_main_menu.png",
+      "reference_dimensions": [
+        213,
+        463
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        453
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/01_main_menu_comparison.png"
+    },
+    {
+      "scenario": "02_casual_gameplay",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/02_casual_gameplay.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "defc0af26bf26cbe2bcf3314ae3edec4379dc7f75a8442b181f530a5f689c625",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/02_casual_gameplay.png",
+      "reference_dimensions": [
+        213,
+        463
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        453
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/02_casual_gameplay_comparison.png"
+    },
+    {
+      "scenario": "03_transition_warning",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/03_transition_warning.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "3b0669872297d33d9afcc5f90d20a168a34c2d08e6b6a93f50e40897d22e41d9",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/03_transition_warning.png",
+      "reference_dimensions": [
+        213,
+        463
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        453
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/03_transition_warning_comparison.png"
+    },
+    {
+      "scenario": "04_target_mode",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/04_target_mode.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "803aefccda02029b48a7377bd8a978119bfa8e12d79b4bf27eea20b4896b0f29",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/04_target_mode.png",
+      "reference_dimensions": [
+        213,
+        463
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        453
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/04_target_mode_comparison.png"
+    },
+    {
+      "scenario": "05_game_over",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/05_game_over.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "048cda8a60e2d1e99cd212ffa1a6e42489b36257424e52fbe44ad77aecbd4655",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/05_game_over.png",
+      "reference_dimensions": [
+        214,
+        463
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        204,
+        453
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/05_game_over_comparison.png"
+    },
+    {
+      "scenario": "06_campaign_map",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/06_campaign_map.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "d61721357cf2eaa869ee409ebbf7bc682db508538c3e34df2f1fc36b99a31a4f",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/06_campaign_map.png",
+      "reference_dimensions": [
+        213,
+        444
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        434
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/06_campaign_map_comparison.png"
+    },
+    {
+      "scenario": "07_chaos_entry",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/07_chaos_entry.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "7853257ffc04215b439052a534eb032552d3002b16a9f23980392589055836bc",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/07_chaos_entry.png",
+      "reference_dimensions": [
+        213,
+        444
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        434
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/07_chaos_entry_comparison.png"
+    },
+    {
+      "scenario": "08_profile",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/08_profile.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "a13e91c08c6e22d38906eb3ff3f2fbfc40d643419427b0a89eeb1808b2a3e8fd",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/08_profile.png",
+      "reference_dimensions": [
+        213,
+        444
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        434
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/08_profile_comparison.png"
+    },
+    {
+      "scenario": "09_settings",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/09_settings.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "c02030d6b2644e54f7483511f837ab0d8bba50295813f622cb9a099b6f65f6cc",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/09_settings.png",
+      "reference_dimensions": [
+        213,
+        444
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        203,
+        434
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/09_settings_comparison.png"
+    },
+    {
+      "scenario": "10_leaderboards",
+      "screenshot": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/screenshots/10_leaderboards.png",
+      "screenshot_dimensions": [
+        390,
+        844
+      ],
+      "screenshot_sha256": "4c5817a94406ec1a3449c97b5003805c490ab9bbfcaedf9a9059086a7a2d765c",
+      "reference": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/design/reference/screens/10_leaderboards.png",
+      "reference_dimensions": [
+        214,
+        444
+      ],
+      "reference_content_crop": [
+        10,
+        8,
+        204,
+        434
+      ],
+      "comparison": "/Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/docs/ui-review/comparisons/10_leaderboards_comparison.png"
+    }
+  ],
+  "notes": [
+    "Artifacts use input screenshot files only. This script does not run or capture the app.",
+    "Existing screenshots must be recaptured after implementation changes; this script cannot establish runtime freshness."
+  ]
+}

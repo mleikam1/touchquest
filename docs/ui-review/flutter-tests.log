@@ -1,0 +1,135 @@
+00:00 +0: loading /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/gameplay_integration_test.dart
+00:00 +0: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Casual accepts every arena point at all precision/boss milestones
+00:00 +1: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Next-only rectangle is invalid before the atomic activation
+00:00 +2: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Fast taps wait for 600ms and a further old-area tap
+00:00 +3: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Three accepted old-area taps remain required after 600ms
+00:00 +4: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Handoff accepts old and new for 200ms, then only new
+00:00 +5: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Overlap and grace never double-count a physical input
+00:00 +6: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Paused wall time neither advances preview nor expires grace or timer
+00:00 +7: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Fixed rectangles do not drift, shrink or follow the boss
+00:00 +8: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Resize pauses an active run, bounds geometry and re-arms preview
+00:00 +9: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Initial layout and repeated equal dimensions preserve gallery state
+00:00 +10: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Rounded corners use the same RRect hit path as painted geometry
+00:00 +11: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Old grace-area taps cannot decrement a new preview
+00:00 +12: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/touch_zone_transition_test.dart: Chaos difficulty grows without changing active or visible preview geometry
+00:00 +13: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/gameplay_integration_test.dart: Text scaling pauses a started arena and exposes deliberate resume
+00:00 +14: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/gameplay_integration_test.dart: Text scaling pauses a started arena and exposes deliberate resume
+00:00 +15: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/gameplay_integration_test.dart: Text scaling pauses a started arena and exposes deliberate resume
+00:00 +16: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/gameplay_integration_test.dart: Text scaling pauses a started arena and exposes deliberate resume
+00:01 +17: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/gameplay_integration_test.dart: Text scaling pauses a started arena and exposes deliberate resume
+00:01 +18: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/gameplay_integration_test.dart: Text scaling pauses a started arena and exposes deliberate resume
+00:01 +19: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +20: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +21: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +22: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +23: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +24: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +25: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +26: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +27: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +28: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +29: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +30: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +31: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +32: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +33: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +34: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +35: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +36: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +37: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:01 +38: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: guest profile edit persists permitted name
+00:02 +39: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/widget_test.dart: Holding and HUD/banner pointers cannot duplicate or score taps
+00:02 +40: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/widget_test.dart: Holding and HUD/banner pointers cannot duplicate or score taps
+00:02 +41: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/widget_test.dart: Holding and HUD/banner pointers cannot duplicate or score taps
+00:02 +42: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: badge detail explains raw-run requirement and locked effects cannot equip
+00:02 +43: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: badge detail explains raw-run requirement and locked effects cannot equip
+00:02 +44: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: badge detail explains raw-run requirement and locked effects cannot equip
+00:02 +45: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: badge detail explains raw-run requirement and locked effects cannot equip
+00:02 +46: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/widget_test.dart: Retry creates exactly one new session after game over
+00:02 +47: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/widget_test.dart: Retry creates exactly one new session after game over
+00:02 +48: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: earned effect preview equips and saves selection
+00:02 +49: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: earned effect preview equips and saves selection
+00:02 +50: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: earned effect preview equips and saves selection
+00:02 +51: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/responsive_screens_test.dart: 03_transition_warning at 390.0×844.0, text 2.0
+00:02 +52: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: campaign preserves five stages per world and enforces progression
+00:02 +53: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: campaign preserves five stages per world and enforces progression
+00:02 +54: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: campaign preserves five stages per world and enforces progression
+00:02 +55: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: campaign preserves five stages per world and enforces progression
+00:02 +56: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: campaign preserves five stages per world and enforces progression
+00:02 +57: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: campaign preserves five stages per world and enforces progression
+00:02 +58: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/responsive_screens_test.dart: 03_transition_warning at 430.0×932.0, text 1.0
+00:02 +59: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +60: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +61: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +62: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +63: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +64: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +65: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +66: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +67: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: leaderboard is honest offline and friends have no invented rows
+00:02 +68: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/game_session_test.dart: All milestones fire exactly once without fabricating raw taps
+00:02 +69: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/game_session_test.dart: All milestones fire exactly once without fabricating raw taps
+00:02 +70: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: fixture leaderboard remains clearly marked and avatar-free
+00:02 +71: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: fixture leaderboard remains clearly marked and avatar-free
+00:03 +72: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: fixture leaderboard remains clearly marked and avatar-free
+00:03 +73: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: fixture leaderboard remains clearly marked and avatar-free
+00:03 +74: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: fixture leaderboard remains clearly marked and avatar-free
+00:03 +75: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: fixture leaderboard remains clearly marked and avatar-free
+00:03 +76: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/responsive_screens_test.dart: 03_transition_warning at 430.0×932.0, text 2.0
+00:03 +77: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/responsive_screens_test.dart: 03_transition_warning at 430.0×932.0, text 2.0
+00:03 +78: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +79: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +80: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +81: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +82: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +83: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +84: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +85: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +86: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +87: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +88: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +89: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: settings volume and accessibility changes persist immediately
+00:03 +90: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +91: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +92: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +93: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +94: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +95: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +96: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +97: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +98: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +99: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +100: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +101: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +102: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +103: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +104: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +105: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +106: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +107: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +108: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +109: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +110: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +111: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:03 +112: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:04 +113: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 01_main_menu renders with bundled fonts
+00:04 +114: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/responsive_screens_test.dart: App interruption pauses the live run until deliberate resume
+00:04 +115: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 390.0×844.0 with 1.5 text
+00:04 +116: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 02_casual_gameplay renders with bundled fonts
+00:04 +117: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 390.0×844.0 with 2.0 text
+00:04 +118: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 03_transition_warning renders with bundled fonts
+00:04 +119: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 430.0×932.0 with 1.5 text
+00:04 +120: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 430.0×932.0 with 1.5 text
+00:04 +121: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 05_game_over renders with bundled fonts
+00:04 +122: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 430.0×932.0 with 2.0 text
+00:04 +123: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 06_campaign_map renders with bundled fonts
+00:04 +124: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 768.0×1024.0 with 1.5 text
+00:04 +125: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 07_chaos_entry renders with bundled fonts
+00:05 +126: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 768.0×1024.0 with 2.0 text
+00:05 +127: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 08_profile renders with bundled fonts
+00:05 +128: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 1440.0×900.0 with 1.5 text
+00:05 +129: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 09_settings renders with bundled fonts
+00:05 +130: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/secondary_screens_test.dart: Secondary layouts at 1440.0×900.0 with 2.0 text
+00:05 +131: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: Production gallery 10_leaderboards renders with bundled fonts
+00:05 +132: /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart: (tearDownAll)
+00:05 +132: All tests passed!
