@@ -1,6 +1,6 @@
 # Milestone implementation matrix
 
-All 28 thresholds fire once per run, preserve their fired state on revive, and persist an achievement. Raw physical taps are never increased by effects. Tests advance a deterministic session through 100,001 taps and verify the entire ordered list.
+All 27 thresholds fire once per run, preserve their fired state on revive, and persist an achievement. Raw physical taps are never increased by effects. Tests advance a deterministic session through 100,001 taps and verify the entire ordered list.
 
 | Taps | Implemented v1 presentation / behavior |
 |---:|---|
@@ -25,7 +25,6 @@ All 28 thresholds fire once per run, preserve their fired state on revive, and p
 | 10,000 | Golden HUD, persistent environment rings, repeated celebration |
 | 15,000 | Persistent score perk: +1 bonus every ten future taps; raw count unchanged |
 | 20,000 | Lightning strokes and electric audio on taps |
-| 25,000 | Fixed decorative purple boss silhouette for 30 taps; does not move accepted geometry or change Casual into precision |
 | 30,000 | 5-second scanline/fake system response sequence |
 | 40,000 | Background palette responds to run tap speed |
 | 50,000 | Original developer thank-you message |
@@ -33,4 +32,4 @@ All 28 thresholds fire once per run, preserve their fired state on revive, and p
 | 75,000 | Permanent Hall of Fame achievement; ranking category exposed |
 | 100,000 | TAP GOD title/profile emblem, gold presentation and continuous celebration |
 
-These are cross-platform Canvas interpretations, not advanced GPU lens shaders. Reduce Motion suppresses movement and repeated celebration bursts; the object pool remains capped. Hyper mode increases bounded bursts, rings, and a restrained edge glow; no target motion or camera shake is added. Beat feedback recognizes cadence consistency from the last eight tap intervals. Boss events leave the current fixed hit area unobscured. Casual remains full-arena throughout; Campaign and Chaos change rectangles only after a visible three-tap/600ms preview and an accepted triggering tap. These effects are working Canvas implementations rather than GPU shader simulations. Hall of Fame publication requires trusted ranking service configuration.
+These are cross-platform Canvas interpretations, not advanced GPU lens shaders. Reduce Motion suppresses movement and repeated celebration bursts; the object pool remains capped. Hyper mode increases bounded bursts, rings, and a restrained edge glow; no target motion or camera shake is added. Beat feedback recognizes cadence consistency from the last eight tap intervals. Casual remains full-arena throughout; Campaign and Chaos change rectangles only after a visible three-tap/600ms preview and an accepted triggering tap. These effects are working Canvas implementations rather than GPU shader simulations. Hall of Fame publication requires trusted ranking service configuration.

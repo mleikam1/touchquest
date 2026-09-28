@@ -13,9 +13,9 @@ flutter run -d chrome
 
 - **Casual / PLAY:** every point in the bounded arena stays valid for the entire run. HUD, milestone footer, and ads never score.
 - **Campaign:** 50 stages across ten worlds; tap fixed rounded touch zones, preview exact upcoming bounds, clear the tap goal, and unlock the next stage.
-- **Chaos:** fixed touch zones, previewed discrete switches, visual ghost rings, and decorative boss events. Accepted hit areas never drift, bounce, or chase.
+- **Chaos:** fixed touch zones, previewed discrete switches, visual ghost rings, and abstract neon zone effects. Accepted hit areas never drift, bounce, or chase.
 
-Layered production illustration and neon Canvas art, exact-location rings, bounded particles, procedural sound effects and music, mobile haptics, 28 milestones through 100,000 taps, guest persistence, cosmetics, accessibility preferences, share-sheet results and optional cloud/ad integrations are included.
+Layered production illustration and neon Canvas art, exact-location rings, bounded particles, procedural sound effects and music, mobile haptics, 27 milestones through 100,000 taps, guest persistence, cosmetics, accessibility preferences, share-sheet results and optional cloud/ad integrations are included.
 
 ## Validate and build
 

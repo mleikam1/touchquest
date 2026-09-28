@@ -24,7 +24,7 @@ GameSession fixture({double elapsed = 0}) {
 }
 
 void main() {
-  test('Casual accepts every arena point at all precision/boss milestones', () {
+  test('Casual accepts every arena point at high tap counts', () {
     final session = GameSession();
     for (final count in [60, 160, 500, 25000, 100000]) {
       session.rawTaps = count;
@@ -143,7 +143,7 @@ void main() {
     },
   );
 
-  test('Fixed rectangles do not drift, shrink or follow the boss', () {
+  test('Fixed rectangles remain stationary at high tap counts', () {
     final session = fixture();
     session.rawTaps = 25000;
     for (var i = 0; i < 10; i++) {

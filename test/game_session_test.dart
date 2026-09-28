@@ -65,6 +65,27 @@ void main() {
     expect(s.score, greaterThan(s.rawTaps));
     expect(s.tap(s.target), isEmpty);
   });
+  test(
+    'Retired threshold grants no milestone and later progression still works',
+    () {
+      expect(milestones.containsKey(25000), false);
+      final session = GameSession()
+        ..rawTaps = 24999
+        ..score = 24999;
+      session.fired.addAll(milestones.keys.where((n) => n < 25000));
+      expect(session.tap(session.target), isEmpty);
+      expect(session.rawTaps, 25000);
+      expect(session.score, 25000);
+      expect(session.fired, isNot(contains(25000)));
+      final unlocked = <int>[];
+      while (session.rawTaps < 30000) {
+        unlocked.addAll(session.tap(session.target));
+      }
+      expect(unlocked, [30000]);
+      expect(session.highest, 30000);
+      expect(session.state, RunState.playing);
+    },
+  );
   test('New run resets temporary progression', () {
     final s = GameSession();
     for (var i = 0; i < 500; i++) {

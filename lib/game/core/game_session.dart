@@ -40,7 +40,6 @@ const milestones = <int, String>{
   10000: 'GOD MODE',
   15000: 'TAP VELOCITY UPGRADE',
   20000: 'ELECTRIC TOUCH',
-  25000: 'BOSS HAND',
   30000: 'SYSTEM MELTDOWN',
   40000: 'TAP UNIVERSE',
   50000: 'SECRET DEVELOPER MESSAGE',
@@ -88,9 +87,6 @@ class GameSession {
   int get goal => 25 + stage * 5;
   double get tapRate => duration > 0 ? rawTaps / duration : 0;
   int get multiplier => overdrive > 0 ? 2 : 1;
-  bool get bossActive =>
-      (rawTaps >= 25000 && rawTaps < 25030) ||
-      (mode == GameMode.chaos && rawTaps >= 160 && rawTaps % 200 >= 160);
   bool get precision => mode != GameMode.casual;
   bool active(int n, double seconds) =>
       ages.containsKey(n) && ages[n]! < seconds;

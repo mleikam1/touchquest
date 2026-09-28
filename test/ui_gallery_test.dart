@@ -53,7 +53,6 @@ void main() {
             'backgrounds/menu.png',
             'backgrounds/gameplay.png',
             'backgrounds/gameover.png',
-            'characters/chaos_hand.png',
             'characters/robot.png',
             'characters/tutorial_hand.png',
             'worlds/world_atlas.png',

@@ -568,29 +568,6 @@ class TouchQuestGame extends FlameGame {
         );
       c.drawRect(bounds.deflate(2), ink);
     }
-    if (session.bossActive) {
-      // A fixed decorative silhouette never changes or obscures accepted geometry.
-      final p = Offset(size.x - 30, size.y - 48);
-      ink
-        ..style = PaintingStyle.fill
-        ..color = magenta.withValues(alpha: .32);
-      c.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCenter(center: p, width: 28, height: 29),
-          const Radius.circular(9),
-        ),
-        ink,
-      );
-      for (var i = 0; i < 4; i++) {
-        c.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(p.dx - 14 + i * 8, p.dy - 35, 6, 27),
-            const Radius.circular(4),
-          ),
-          ink,
-        );
-      }
-    }
     ink.style = PaintingStyle.fill;
   }
 }

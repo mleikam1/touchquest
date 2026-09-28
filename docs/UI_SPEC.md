@@ -2,7 +2,8 @@
 
 Source: `docs/prompts/touch_quest_ui_prompt.txt` (the complete user brief). Starting
 commit: `12080316be54bd51fab36bb8a21fb5b1b7f47ef9`. Working branch:
-`feature/reference-matched-ui`. The prior local checkout is untouched.
+`fix/remove-boss-hands` (follow-up to `feature/reference-matched-ui`).
+The prior local checkout is untouched.
 
 ## Visual source
 
@@ -16,6 +17,15 @@ scaling. On wide displays center a portrait surface in an atmospheric surround.
 Use separately generated illustration assets and live Flutter widgets, never a
 screenshot behind invisible controls. Flutter owns navigation, HUD, accessibility,
 dialogs and menus; Flame owns the bounded arena, zones, rings and particles.
+
+## Current user override
+
+The follow-up request removes all boss hands from the game, including related
+mechanics, audio, collection badges and the 25,000-tap milestone. Chaos entry uses
+original abstract neon zone artwork. This overrides the supplied board's creature
+art while preserving its color palette, composition and button hierarchy. The
+ordinary tutorial tap pointer and robot mascot remain. Source raster references
+stay unchanged and outside the production bundle.
 
 ## Shared treatment
 
@@ -38,7 +48,7 @@ gradient controls. Yellow PLAY/START CHAOS, blue retry, green rewarded revive.
 6. Campaign: illustrated world cards in established order, persisted stage locks,
    progress and matching stage selector. Catalog has five stages per world;
    display this actual denominator instead of the board's illustrative 30.
-7. Chaos: warm title, large spectral hand, feature list, yellow launch button.
+7. Chaos: warm title, abstract neon zone artwork, feature list, yellow launch button.
 8. Profile: robot mascot, editable name, 2×2 real stats, badges, effect previews.
 9. Settings: persistent volume/accessibility/quality controls plus account/legal.
 10. Rankings: Global/Friends/Hall of Fame, metrics distinguishable, no avatars or
@@ -53,7 +63,7 @@ satisfied, count the triggering tap once on old geometry then switch atomically.
 Accept old/new for configurable 200ms grace. No target position/size tweens.
 Resize pauses and rearms geometry. Pauses and system interruptions stop time.
 Revive restores the existing run only after reward and ad dismissal, then waits
-for an explicit ready action. Existing milestones through 100,000 are retained.
+for an explicit ready action. The remaining 27 milestones through 100,000 are retained.
 
 ## Trust and verification
 

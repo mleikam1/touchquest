@@ -95,6 +95,64 @@ void main() {
     },
   );
 
+  testWidgets(
+    'retired badge in an old save cannot appear in profile or collection',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'touchquest.v1':
+            '{"displayName":"Returning player","lifetimeTaps":500000,"bestRawRun":100000,"bestScore":125000,"campaign":35,"skin":"gold","badges":[1000,5000,25000,100000]}',
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final save = SaveService(prefs);
+      final persisted = prefs.getString('touchquest.v1');
+      await render(
+        tester,
+        ProfileScreen(
+          save: save,
+          cloud: FirebaseService(save),
+          onNavigate: (_) {},
+        ),
+      );
+      expect(find.text('3/${milestones.length}'), findsOneWidget);
+      expect(find.text('7/${worlds.length}'), findsOneWidget);
+      expect(
+        tester
+            .widgetList<BadgeTile>(find.byType(BadgeTile))
+            .map((tile) => tile.threshold),
+        [1000, 10000, 100000],
+      );
+      expect(find.textContaining('BOSS'), findsNothing);
+
+      await render(
+        tester,
+        CollectionScreen(save: save, onNavigate: (_) {}, achievements: true),
+      );
+      expect(find.text('3 / ${milestones.length} UNLOCKED'), findsOneWidget);
+      expect(
+        tester
+            .widgetList<BadgeTile>(find.byType(BadgeTile))
+            .where((tile) => tile.threshold == 25000),
+        isEmpty,
+      );
+      expect(find.textContaining('BOSS'), findsNothing);
+      // A stale detail callback must not bring back a removed achievement.
+      await showBadgeDetails(
+        tester.element(find.byType(CollectionScreen)),
+        25000,
+        save,
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsNothing);
+      expect(save.number('lifetimeTaps'), 500000);
+      expect(save.number('bestRawRun'), 100000);
+      expect(save.number('bestScore'), 125000);
+      expect(save.number('campaign'), 35);
+      expect(save.choice('skin', ''), 'gold');
+      expect(save.badges, containsAll([1000, 5000, 100000]));
+      expect(prefs.getString('touchquest.v1'), persisted);
+    },
+  );
+
   testWidgets('earned effect preview equips and saves selection', (
     tester,
   ) async {

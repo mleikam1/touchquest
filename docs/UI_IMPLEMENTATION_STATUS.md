@@ -1,14 +1,24 @@
 # Reference-matched UI implementation status
 
 Starting commit: `12080316be54bd51fab36bb8a21fb5b1b7f47ef9`.
-Branch: `feature/reference-matched-ui`.
+Original implementation branch: `feature/reference-matched-ui`.
+Current follow-up branch: `fix/remove-boss-hands`.
+
+## Current user override
+
+All boss-hand art and associated gameplay/audio/badge references are removed;
+the 25,000-tap milestone is no longer in the catalog. Chaos entry uses a native
+abstract neon zone hero. The ordinary tutorial pointer and robot mascot remain.
+Archived reference images are preserved, with explicit override notes in both
+reference READMEs and both saved prompt copies.
 
 ## Implemented and reviewed
 
 All ten reference compositions are implemented using production Flutter widgets
 and the existing Flame arena. Gameplay, transition warning and target activation
-are states of one session. The work includes seven separately generated
-illustration assets, bundled licensed fonts, vector branding, reusable controls,
+are states of one session. The work includes six separately generated
+illustration assets, native abstract Chaos zone artwork, bundled licensed fonts,
+vector branding, reusable controls,
 world/stage selection, profile editing, badges and effect previews/equip,
 settings, account/privacy/legal pages, pause/resume and result overlays.
 
@@ -30,7 +40,7 @@ prompts and licenses are in `assets/art/ASSET_MANIFEST.md`.
   reserved geometry stays stable; gameplay controls never cover a live ad.
 - Reduced motion/flashing and effects quality change live rendering. Haptics are
   rate limited with a web fallback; music/SFX sliders apply and persist immediately.
-- The full 28-milestone catalog through 100,000 and 50-stage campaign are retained.
+- The remaining 27-milestone catalog through 100,000 and 50-stage campaign are retained.
 - No reference screenshot is in the production asset bundle. No avatar or avatar
   placeholder is rendered in leaderboard rows.
 
@@ -92,7 +102,7 @@ flutter build ios --simulator --debug --no-pub
 ```
 
 Do not run Flutter package regeneration concurrently with an iOS SPM build.
-Final local validation passed formatting, zero-issue analysis, 132 Flutter tests,
+Final local validation passed formatting, zero-issue analysis, 134 Flutter tests,
 four backend tests, and web/Android debug/iOS simulator builds.
 Builds and verification details are in `docs/ui-review/VALIDATION.md`; command
 output is preserved alongside that file. No production deployment, force-push,
