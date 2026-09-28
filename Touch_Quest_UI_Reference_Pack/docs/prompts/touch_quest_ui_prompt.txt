@@ -1,0 +1,585 @@
+TOUCH QUEST — REFERENCE-MATCHED FLUTTER UI IMPLEMENTATION
+
+REPOSITORY
+https://github.com/mleikam1/touchquest
+
+MISSION
+Implement the attached Touch Quest design as real, interactive Flutter + Flame
+UI for iOS, Android, and web. This is a visual implementation task, NOT an
+invitation to redesign the game. Match the reference's artwork, composition,
+typography, button hierarchy, panel treatments, colors, and visual intensity.
+
+Work in the actual repository. Inspect existing code, preserve working gameplay
+and backend integrations, create the assets/components/screens, run the app,
+capture screenshots, compare them with the reference, and correct discrepancies.
+Do not stop after producing a plan, mockup, or collection of empty screens.
+
+1. SOURCE OF TRUTH AND APPROVED EXCEPTIONS
+
+The reference pack, when present, is at:
+  design/reference/touch_quest_master.png
+  design/reference/screens/01_main_menu.png
+  design/reference/screens/02_casual_gameplay.png
+  design/reference/screens/03_transition_warning.png
+  design/reference/screens/04_target_mode.png
+  design/reference/screens/05_game_over.png
+  design/reference/screens/06_campaign_map.png
+  design/reference/screens/07_chaos_entry.png
+  design/reference/screens/08_profile.png
+  design/reference/screens/09_settings.png
+  design/reference/screens/10_leaderboards.png
+  design/reference/milestone_strip.png
+  design/reference/touch_area_types.png
+
+Open and inspect the actual images before coding. The individual PNGs are
+reference crops, NOT production assets. If only the attached master is available,
+save it and create equivalent reference crops. If neither is accessible, request
+the image rather than inventing a different design.
+
+User-approved differences from the board:
+- Leaderboard rows must NOT contain player avatars or profile photographs yet.
+  Keep the rank, name, score, tabs, and highlighted player row.
+- The robot in the Profile illustration may remain as an original GAME MASCOT.
+- Touch targets DO NOT float, drift, bounce, or travel between locations.
+  They stay fixed, preview the next location, then switch discretely.
+- Correct garbled/generated text and calculate real statistics accurately.
+- Honor accessibility, safe areas, ad separation, and actual platform behavior.
+
+The phone bezels, camera cutouts, exterior headings, surrounding poster, and
+bottom presentation captions are NOT app UI. Do not draw a fake phone notch.
+Do not put all ten phones on one user-facing screen.
+
+2. REPOSITORY AND IMPLEMENTATION RULES
+
+Read existing repository instructions and inspect git status, architecture,
+Flutter/Dart/Flame versions, routes, assets, tests, and platform configuration.
+Do not assume the repository is empty. Record the starting commit and work on
+feature/reference-matched-ui, or an appropriate non-conflicting branch.
+Preserve uncommitted user work. Do not force-push or deploy production services.
+
+Keep Flutter + Flame. Do not replace the app with React, HTML, or Unity.
+Use package APIs verified against installed versions. Preserve compatible locked
+versions unless a justified change is necessary.
+
+Use Flutter for screens, HUD, settings, menus, and accessible controls. Use Flame
+for the playable arena, targets, particles, and game-time animation. Reuse the
+existing state-management approach instead of introducing competing frameworks.
+Create one game instance per gameplay session, not inside a rebuilding build().
+
+Screens 2, 3, and 4 are THREE STATES OF ONE GAMEPLAY SCREEN, not separate games
+or route transitions. Changing target state must preserve the run and timer.
+
+Create docs/UI_SPEC.md and docs/UI_IMPLEMENTATION_STATUS.md. Persist this brief
+and the visual decisions there so work can continue across sessions.
+
+3. ART DIRECTION — MATCH THE IMAGE, NOT GENERIC MATERIAL UI
+
+Visual identity:
+- Near-black navy backgrounds with deep blue/purple atmospheric depth.
+- Electric cyan edges, bright magenta energy, occasional orange/yellow sparks.
+- Illustrated floating islands and luminous clouds on the main menu.
+- Beveled, slightly italic, heavyweight arcade display lettering.
+- Compact white/cyan utility text, readable numbers, strong contrast.
+- Dark translucent panels with thin luminous borders and subtle inner shading.
+- Yellow/orange primary PLAY and START CHAOS buttons.
+- Bright blue TRY AGAIN button; vivid green rewarded REVIVE button.
+- Red/crimson lightning and a warm beveled title on Game Over.
+
+Initial color tokens to refine against the image:
+  background: #050A24
+  panel: #071B3B
+  panelHighlight: #0D2D59
+  cyan: #00D9FF
+  magenta: #F13CFF
+  violet: #7938F2
+  yellow: #FFE13B
+  orange: #FF9A00
+  rewardGreen: #00EE69
+  white: #F5F7FF
+  mutedText: #A8BCD8
+
+These are starting estimates, not measured colors. Sample the reference and
+adjust. Avoid automatic Material color harmonization that changes the palette.
+
+Create shared typography, spacing, radii, border, shadow, and animation tokens.
+Use a licensed bundled display font close to the reference and a readable body
+font. Do not use system defaults as the final branded treatment. Record asset
+and font licenses. Make the TOUCH QUEST logo a separate sharp asset or vector
+composition, with cyan TOUCH and yellow-to-magenta QUEST lettering.
+
+Use roughly 390x844 logical pixels as a working portrait baseline, then adapt
+responsively. Keep essential controls at usable sizes; do not shrink an entire
+screen bitmap to fit. Match the artwork and proportions of each reference crop.
+
+4. PRODUCTION ARTWORK AND ASSETS
+
+The illustrated artwork is essential, not optional decoration.
+
+Create separate, production-quality assets for:
+- Touch Quest logo with transparent background.
+- Main-menu background: sky/nebula, clouds, floating islands, foreground accents.
+- Gameplay background and energy streaks.
+- Chaos entry artwork: large purple spectral hand, sparks, floating shapes.
+- Game Over red lightning/background and stylized title.
+- Campaign thumbnails for the themed worlds.
+- Original robot mascot and tutorial tap hand.
+- Badges, crowns, locks, effect thumbnails, and navigation icons.
+
+Use available illustration/vector/asset-generation tools. Do not assume an image
+service is available or claim to have used one without actually doing so.
+Recreate simple assets as SVG, paths, or layered painters where appropriate.
+Export complex art as sharp, appropriately sized transparent PNG/WebP assets.
+Keep editable source artwork or generation scripts when possible.
+
+Do NOT use the complete reference screenshot as a background with invisible
+buttons on top. Do NOT upscale a tiny phone crop and call it finished artwork.
+Do NOT substitute emoji, unrelated clip art, or plain colored rectangles for
+the distinctive illustration. A gradient alone is not the illustrated menu.
+
+Use decorative art as art; render scores, labels, tabs, buttons, progress bars,
+and settings as actual widgets. Do not bake live text into background images.
+
+Record sources, licenses, dimensions, and implementation method in
+assets/art/ASSET_MANIFEST.md. Report any remaining artwork mismatch honestly.
+
+5. REUSABLE UI STRUCTURE
+
+Adapt to the existing architecture; do not duplicate equivalent files. Suggested
+boundaries:
+
+lib/ui/
+  theme/
+    arcade_colors.dart
+    arcade_typography.dart
+    arcade_metrics.dart
+    arcade_motion.dart
+  widgets/
+    arcade_background.dart
+    arcade_logo.dart
+    arcade_button.dart
+    neon_panel.dart
+    arcade_header.dart
+    arcade_bottom_nav.dart
+    stat_tile.dart
+    badge_tile.dart
+    effect_tile.dart
+    world_card.dart
+    leaderboard_row.dart
+    banner_ad_slot.dart
+  screens/
+    main_menu_screen.dart
+    gameplay_screen.dart
+    campaign_screen.dart
+    campaign_stage_screen.dart
+    chaos_intro_screen.dart
+    profile_screen.dart
+    settings_screen.dart
+    leaderboard_screen.dart
+  overlays/
+    gameplay_hud.dart
+    milestone_card.dart
+    pause_overlay.dart
+    game_over_overlay.dart
+    achievement_overlay.dart
+    target_instruction_overlay.dart
+  preview/
+    ui_gallery_screen.dart
+    ui_fixture_data.dart
+    ui_screenshot_scenarios.dart
+
+lib/game/
+  components/
+    active_touch_zone.dart
+    next_touch_zone_preview.dart
+    tap_feedback.dart
+  systems/
+    touch_zone_transition_controller.dart
+
+assets/art/
+  branding/
+  backgrounds/
+  worlds/
+  characters/
+  badges/
+  effects/
+  icons/
+
+Keep UI components separate from services. The presentation layer consumes
+profile, progression, settings, leaderboard, and ad state; it must not directly
+write arbitrary scores or unlocks into Firestore.
+
+6. SCREEN 1 — MAIN MENU
+
+Match 01_main_menu.png.
+
+Composition:
+- Full-screen illustrated blue/purple fantasy arcade environment.
+- Large two-line TOUCH QUEST logo in the upper portion.
+- TAP. SURVIVE. ASCEND. beneath it.
+- Centered stack of controls below, matching the reference's width/hierarchy.
+- PLAY is the largest, bright yellow/orange beveled button.
+- Smaller dark-navy cyan-edged buttons, in this order:
+  CAMPAIGN, CHAOS RUN, LEADERBOARD, PROFILE, SETTINGS.
+- Four compact square shortcuts near the bottom. Give them purposeful actions:
+  Achievements, Skins, Profile, Settings; use matching line-art/trophy/crown icons.
+- Small version label, without generated gibberish.
+
+PLAY starts Casual. The other buttons open their named destinations. Profile
+must work for a guest. Do not insert mandatory authentication before play.
+
+Use subtle cloud depth, drifting decorative sparks, and a slow logo glow.
+These decorative movements are allowed; moving HIT AREAS are not.
+
+7. SCREEN 2 — CASUAL GAMEPLAY
+
+Match 02_casual_gameplay.png.
+
+Layout from top to bottom:
+A. Persistent blue/navy HUD with SCORE left, BEST near the center, and a circular
+   pause button right. Use bold white numbers with a restrained cyan glow.
+B. A wide rounded inactivity meter directly below, with luminous green/cyan fill
+   and remaining seconds centered in it.
+C. The large dark-blue playable arena, with TAP ANYWHERE! during onboarding.
+D. A compact navy milestone card with gold icon and two-line next-reward text.
+E. A separated bottom banner region with a centered 320x50 logical-unit slot.
+
+Every accepted tap renders rings, sparks, and a short glow at the exact input
+position. The tutorial hand is onboarding/reference-preview artwork; fade it
+away after the player begins. Do not leave a giant hand covering live targets.
+
+Casual uses the full PLAYABLE ARENA, not the HUD, navigation, milestone card,
+or advertisement. Do not turn the banner, pause control, or UI panels into inputs.
+The timeout is 1.5 seconds; fill must be full at 1.5 and empty at zero even when
+sample numbers in the illustration are inconsistent.
+
+The milestone card must reflect the actual next milestone and raw tap progress,
+not a hardcoded example. Preserve raw taps separately from boosted score.
+
+8. SCREENS 3 AND 4 — PREVIEWED, DISCRETE TOUCH-ZONE CHANGES
+
+Match 03_transition_warning.png and 04_target_mode.png.
+This interaction OVERRIDES older requirements about balloon-like moving targets.
+
+CURRENT ZONE:
+A stationary rounded rectangle, solid luminous cyan border, dark translucent
+fill, and a readable TAP HERE or CURRENT AREA label.
+
+NEXT ZONE:
+A stationary rounded rectangle at its future position, dashed magenta border,
+subtle purple fill, and a NEXT AREA label. Preview the EXACT future bounds,
+including its size. A small arrow can connect the zones as in the reference.
+
+Header during preview:
+NEXT TAP AREA IN 3 TAPS
+then 2 TAPS, then 1 TAP.
+
+Behavior:
+- Keep the existing area active while the preview is visible.
+- The preview is NOT a valid target yet. Touching it follows the mode's existing
+  outside-target rule; do not count it as a valid tap.
+- Start a preview at least three accepted taps before a shift.
+- Also require at least 600ms of visible preview, measured in active game time.
+- Decrement only on accepted taps in the current area.
+- If the count reaches zero before 600ms, keep the old area active and show
+  NEXT AREA READY. Switch on the first valid tap at/after the minimum duration.
+- Count that triggering tap once against the OLD geometry, then atomically
+  activate the previewed rectangle for subsequent inputs.
+- New area appears in place with a brief activation glow. It does not travel,
+  slide, bounce, follow a path, or get tweened across the screen.
+- Match the target-mode screenshot with a bright magenta activation burst;
+  settle the solid active outline to cyan for ongoing current/next clarity.
+- For a configurable 200ms handoff grace, either the old or new rectangle may
+  accept a tap. Show the fading old outline while it is still accepted.
+- After grace, only the new area is valid. Each pointer-down can score ONCE,
+  including inside overlapping rectangles or during the handoff.
+- Every accepted tap resets the usual 1.5-second inactivity timer. Decorative
+  animations and previews must not reset it or fabricate taps.
+
+The dashed/solid border and labels must distinguish states without color alone.
+Keep both labels legible and avoid overlaps with HUD/milestone/ad regions.
+
+Difficulty can increase through smaller fixed boxes, more frequent shifts,
+farther-apart positions, or split fixed boxes in Chaos. All upcoming active
+geometry must be previewed. Keep a practical initial minimum target size around
+88x88 logical pixels, larger where needed for usability.
+
+Use the SAME rectangle/path data for rendering, preview, and hit testing. Keep
+coordinates local to the bounded gameplay arena. Decorative glow is outside the
+hitbox; it must not silently enlarge/shrink accepted input.
+
+Do not change target size or position while it is the active area. No continuous
+target motion, including during bosses. Recalculate safely on resize/orientation
+changes; pause/re-arm rather than moving a target under an ongoing touch.
+
+Implement these as states of the existing gameplay screen. Casual remains a
+full-field mode; Campaign and Chaos use the fixed-zone transition system.
+
+9. SCREEN 5 — GAME OVER
+
+Match 05_game_over.png.
+
+Use a crimson/near-black atmosphere with branching red energy. Large italic,
+beveled yellow-to-red GAME OVER title above two bordered panels.
+
+First panel: left-aligned labels with right-aligned values:
+RAW TAPS
+SCORE
+TIME SURVIVED
+HIGHEST MILESTONE
+AVERAGE TAPS / SEC
+REVIVES USED
+
+Second panel: one short family-friendly run-specific reaction.
+
+Then stack full-width buttons:
+- WATCH AD TO REVIVE: green, small video icon.
+- TRY AGAIN: blue gradient.
+- MAIN MENU: dark navy with light outline.
+
+Calculate real statistics. Screenshot fixture values are not production data.
+Reward availability must come from the ad service. Handle loading, unavailable,
+cancelled, failed, and successfully rewarded states. Disable duplicate requests.
+Restore the run only after confirmed reward AND ad dismissal. Preserve score,
+taps, milestones, and effects state; require a clear ready/resume action before
+restarting the timer. Never simulate a rewarded completion in a release build.
+
+10. SCREEN 6 — CAMPAIGN MAP
+
+Match 06_campaign_map.png: dark navy screen, compact back arrow/title, vertically
+stacked world cards, illustrated thumbnail left, name/progress/lock right.
+
+First visible worlds, in order:
+1. Neon Beginnings
+2. Pixel Panic
+3. Underwater Tap
+4. Cosmic Touch
+5. Lava Fingers
+
+Use the established campaign catalog for additional worlds. The first card shows
+progress such as 0/30. Locked worlds are dimmed but still attractive and readable.
+Cards open a matching stage-selection screen. Locks and progress come from saved
+campaign state, not display-only hardcoding.
+
+Use the reference-style bottom navigation: Home, Campaign, Chaos, Leaderboard.
+Selected icon/label glows cyan. Keep it outside scrollable content. Fix the board's
+misspellings rather than reproducing them.
+
+11. SCREEN 7 — CHAOS ENTRY
+
+Match 07_chaos_entry.png.
+
+Large orange/yellow CHAOS RUN title; dominant purple spectral hand illustration;
+small colored shapes and energy particles; pink/white subtitle:
+Survive the madness...
+
+Feature text:
+Shifting touch zones
+Ghost taps
+Boss hand
+Random events
+Increasing difficulty
+
+Wide yellow/orange START CHAOS button near the bottom, safely above the home
+indicator. Start the actual Chaos mode. The hand illustration can animate, but
+valid touch boxes still use preview-then-switch, never continuous drift.
+
+12. SCREEN 8 — PROFILE
+
+Match 08_profile.png.
+
+MY PROFILE header; original robot mascot tile; player name and title; small EDIT
+control. Below, use the same two-by-two stat grid:
+LIFETIME TAPS / BEST RUN
+ACHIEVEMENTS / WORLDS CLEARED
+
+Then BADGES: gold 1K/10K-style medals and subdued locked tiles.
+Then SKINS & EFFECTS: square thumbnails with neon particle previews.
+Bottom navigation: Home, Profile, Settings.
+
+Edit changes permitted profile fields through the existing service. Tapping a
+badge opens its requirements/details. Tapping an unlocked effect opens a live
+preview and equip action. Locked cosmetics show how to unlock them.
+
+Support guests, loading, empty progress, signed-in state, and sync errors without
+replacing the entire UI with a generic error screen.
+
+13. SCREEN 9 — SETTINGS
+
+Match 09_settings.png: compact header, two groups of dark bordered settings rows,
+cyan sliders, a green haptics toggle, white labels, and subtle separators.
+
+Controls:
+Music volume
+Sound-effects volume
+Haptics toggle
+Haptic intensity: Low / Normal / High
+Reduce Motion
+Reduce Flashing
+Effects Quality: Auto / Low / High
+Account
+Privacy Policy
+Terms of Service
+App Version
+
+Keep the notifications row only when functional or explicitly labeled Coming
+Soon; do not display a nonworking switch. All other controls must work and persist.
+Changes must apply immediately. Privacy/Terms open real in-app documents or
+configured destinations; do not use empty onPressed callbacks.
+
+Preserve existing sign-in, consent/privacy options, sign-out, account-deletion,
+and accessibility flows. Put secondary account actions in a matching subpage.
+Do not weaken privacy/age-related restrictions for the sake of the visual demo.
+
+14. SCREEN 10 — LEADERBOARD WITHOUT AVATARS
+
+Match 10_leaderboards.png apart from the requested avatar removal.
+
+LEADERBOARDS title; segmented Global / Friends / Hall of Fame tabs; dark list;
+gold/silver/bronze rank treatment; compact white names and right-aligned numbers;
+cyan-highlighted current-player row with a warm score accent.
+
+Rows contain rank, display name, metric, and optional small achievement badge.
+No player portraits, image circles, photo fetches, or avatar placeholders.
+Use the freed space for names, not an empty column.
+
+Keep rankings for different modes/metrics distinguishable. Do not mix assisted
+and unassisted/raw results without labels. Use the existing backend contract.
+If a source or Friends feature is not ready, show an honest styled empty or
+unavailable state. Never invent live players or standings.
+
+15. MILESTONE VISUALS AND SECONDARY STATES
+
+The bottom strip is an asset/style guide, not a bar permanently covering gameplay.
+Build its visual vocabulary into milestone cards, badge reveals, effects, and the
+profile collection:
+100 background shift; 200 explosions; 300 funny sounds; 500 Overdrive;
+1,000 ascension medal; 3,000 robot assistant; 5,000 golden trail;
+10,000 crown; 25,000 purple boss hand; 100,000 ornate Tap God emblem.
+
+Preserve the full existing milestone catalog through 100,000, including milestones
+not pictured in the strip. Trigger milestones from real run/progression state.
+Debug previews may jump to milestones but must never change production accounts.
+
+Also build matching pause/resume, achievement reveal, cosmetic preview, campaign
+stage selection, confirmation dialog, loading, offline, and empty states. Reuse
+components rather than inventing a different visual language on these screens.
+
+16. MOTION, INPUT, HAPTICS, AND AD LAYOUT
+
+Button press: approximately 80ms compression, 120ms return.
+Screen transition: approximately 180-250ms fade/short displacement.
+Tap ring/burst: approximately 180-450ms, exact input position.
+Zone activation: approximately 120-180ms glow; no positional interpolation.
+Background illustration motion: slow and subtle, with a static fallback.
+
+Reduce Motion removes shakes, parallax, and displacement. Reduce Flashing uses
+steady glows/smooth fades instead of flashes. Do not use high-contrast full-screen
+strobing. Stronger effects must never obscure current/next targets or the timer.
+Rate-limit haptics and bound particles. Provide a no-haptics fallback on web.
+
+Decorative overlays must not intercept input. Modal pause/settings/game-over
+screens must block gameplay intentionally and pause the run. Use actual pointer
+DOWN events, not touch-hold, hover, particle events, or duplicate input handlers.
+
+Layout the game as separate bounded HUD, arena, milestone footer, and banner
+regions. Fit the 320x50 ad INSIDE its reserved region, centered; leave a deliberate
+noninteractive divider/gap from rapid-tap controls. Keep safe-area insets separate
+from the ad height. Do not stretch the ad to fill the screen width.
+
+Never draw effects above a real ad, style a game control as an ad close button,
+or count ad interaction as gameplay. Use a labeled placeholder in UI previews;
+use real ad-service availability in production. No ad fill must not cause the
+arena or hitboxes to jump during a run. Preserve platform-specific ad adapters.
+
+17. BACKEND BINDING AND PREVIEW MODE
+
+Integrate with existing Firebase/auth/profile/progression/settings/ads services.
+Do not replace server validation or security rules with direct UI writes.
+Define typed view models/adapters where needed, and document missing contracts.
+
+Provide a developer-only UI gallery using the SAME production components. It
+must expose every screen and the gameplay states at fixed scores, timer values,
+preview counts, target coordinates, and animation timestamps.
+
+Inject deterministic clocks/random seeds and mock repositories in this gallery.
+Disable real ads, analytics, and production writes there. The gallery and fixture
+leaderboards must not be exposed in release navigation. Screens must also work
+against real state outside the gallery.
+
+Missing external credentials are not a reason to abandon UI work. Finish local
+integration and truthful unavailable states; document the exact service blocker.
+Do not claim a backend connection or deployment that did not occur.
+
+18. VISUAL QA — REQUIRED, NOT OPTIONAL
+
+For every reference screen:
+1. Render the actual app using its screenshot scenario.
+2. Capture a screenshot, not a newly drawn mockup.
+3. Compare against the corresponding reference crop.
+4. Inspect art, logo, spacing, proportions, typography, borders, color, and density.
+5. Correct the largest discrepancies and recapture.
+
+Account for the reference's device frames and inconsistent poster crop ratios.
+Compare the app content, not the surrounding bezel. Do not claim byte-for-byte
+matching against a resized illustrated screenshot.
+
+Save actual screenshots and side-by-side comparisons in:
+  docs/ui-review/screenshots/
+  docs/ui-review/comparisons/
+  docs/ui-review/UI_REVIEW.md
+
+Create a contact sheet of the RENDERED APP screens for final review. Keep it out
+of the production asset bundle. Identify remaining differences screen by screen.
+
+Add Flutter golden tests with loaded production fonts, deterministic state,
+frozen animation time, and a documented Flutter/platform test environment.
+Use reference comparisons to judge visual fidelity; use goldens to prevent
+regressions after the reconstructed screens have been reviewed. Merely generating
+a golden from the current implementation is not proof of matching the design.
+
+Test representative sizes: 360x800, 390x844, 430x932, tablet, and 1440x900 web.
+On wide screens, center the portrait game within an atmospheric surrounding
+background instead of stretching the arena across the browser. Keep score and
+hit-testing coordinates consistent. Verify real text at enlarged text scales.
+
+19. IMPLEMENTATION ORDER AND ACCEPTANCE
+
+Execute in this order and continue through all phases:
+A. Inspect repo/reference; save UI specification, crop references, create tokens.
+B. Build production art and shared components; finish Main Menu first.
+C. Finish gameplay HUD, arena, milestone footer, and discrete target previews.
+D. Finish Game Over, Campaign, and Chaos entry.
+E. Finish Profile, Settings, Leaderboard, and supporting dialogs/subscreens.
+F. Bind existing services and complete the deterministic UI gallery.
+G. Capture/compare/correct each screen; test and validate builds.
+
+Validate with formatting, flutter analyze, flutter test, and flutter build web.
+Run Android builds and iOS simulator/unsigned builds where tooling permits.
+Record actual command output, failures, and external blockers. Never label a
+platform tested unless it was tested.
+
+Test at minimum:
+- Every visible enabled control has its intended action.
+- HUD and banner touches never score.
+- Timer pauses in menus/system interruptions and resumes deliberately.
+- Preview bounds equal the next active bounds.
+- Preview remains visible before activation; no moving-target tween exists.
+- Triggering tap is evaluated once against the old zone.
+- Handoff grace accepts only the specified areas and expires correctly.
+- Target/effect geometry never intrudes into HUD or ad space.
+- Settings persist and reduced-effects modes change rendering.
+- Retry/revive do not create duplicate game instances or stale animations.
+- Fixture data cannot write to real profiles or appear as live leaderboards.
+
+Delivery:
+- Branch and commit identifiers.
+- Files/assets created or changed.
+- Ten actual screen captures and the rendered contact sheet.
+- A short recording of preview -> switch -> active tapping.
+- Screen-by-screen visual comparison and unresolved artwork differences.
+- Analyzer/test/build results with platform-specific limitations.
+- Backend integrations actually connected versus externally blocked.
+- Exact commands to run the app and developer UI gallery.
+
+Finish with real, interactive Flutter UI that visibly matches the supplied design.
+Do not declare success solely because the app compiles or the buttons navigate.
