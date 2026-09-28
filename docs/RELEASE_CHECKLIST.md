@@ -25,6 +25,6 @@
 - [ ] Complete platform privacy/data-safety declarations for configured services.
 - [ ] App signing, provisioning, store listing, icons/screenshots and production URLs.
 - [ ] Validate accessibility with assistive technology and larger text settings.
-- [ ] Optional polish expansion: more complex boss encounters and additional original music layers.
+- [ ] Optional polish expansion: additional original music layers and abstract neon effects.
 
 No credentials, hosted backend or signed store release were supplied by this task.

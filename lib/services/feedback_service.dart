@@ -23,7 +23,6 @@ class FeedbackService {
         'gameover',
         'revive',
         'electric',
-        'boss',
         'fireworks',
         'countdown',
         'menu',

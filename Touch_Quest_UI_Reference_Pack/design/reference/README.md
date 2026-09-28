@@ -7,6 +7,15 @@ They are design/QA references, not production backgrounds or asset exports.
 Extract this archive into the root of the `touchquest` repository. The Codex
 prompt is in `docs/prompts/touch_quest_ui_prompt.txt`.
 
+## Current user override
+
+Boss-hand artwork, mechanics, audio, badges and the 25,000-tap milestone have
+been removed from the game at the user's request. Chaos entry now uses original
+abstract neon zone artwork. This supersedes the creature depicted in the master,
+Chaos crop and milestone strip. Those raster references remain unchanged archival
+material and are not bundled production assets. The ordinary tutorial tap pointer
+and original robot mascot remain valid references.
+
 ## Approved behavioral changes
 
 - Keep the leaderboard layout, but omit player avatars/profile photographs.

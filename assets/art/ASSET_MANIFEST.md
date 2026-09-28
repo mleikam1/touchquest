@@ -1,13 +1,13 @@
 # Production artwork manifest
 
-Generated 2026-09-28 with the built-in OpenAI `image_gen` image generation tool. All listed files are original generated production artwork. The supplied reference master and screen crops were visually inspected for style and composition only; they were not inserted, traced, or cropped into these production assets. No screenshot is bundled as production background art. Actual pixel dimensions below were verified with macOS `sips`; requested generation dimensions may differ from returned dimensions.
+Generated 2026-09-28 with the built-in OpenAI `image_gen` image generation tool. All listed raster files are original generated production artwork. The supplied reference master and screen crops were visually inspected for style and composition only; they were not inserted, traced, or cropped into these production assets. No screenshot is bundled as production background art. Actual pixel dimensions below were verified with macOS `sips`; requested generation dimensions may differ from returned dimensions.
 
 ## Source and rights notes
 
 - Method: individual built-in image generation requests, one per asset; ten world illustrations share one contact-sheet atlas.
 - All images are copied unchanged from built-in generated outputs into this repository. No downloaded third-party artwork, image-processing edits, or screenshot crops were used.
 - License/provenance: AI-generated output made for this project, subject to the user's applicable OpenAI terms. No separate third-party artwork license is asserted, and this manifest makes no claim that AI output is exclusively copyrightable.
-- Alpha transparency was requested for the three character images and verified present. Backgrounds and atlas are opaque PNGs.
+- Alpha transparency was requested for the two character images and verified present. Backgrounds and atlas are opaque PNGs.
 - Original generator source directory: `/Users/MattLeikam/.codex/generated_images/01a0e9b6-5e4b-76a3-b91b-dbc97d9188f7/`. Original files are retained there, but app asset paths refer only to repository copies.
 - Quality checks: each generated output was visually inspected for composition, missing text/UI, expected theme and silhouette. Rendering checks should continue in the app at device scale.
 
@@ -16,7 +16,6 @@ Generated 2026-09-28 with the built-in OpenAI `image_gen` image generation tool.
 | Asset relative to assets/art | Dimensions | Alpha | Purpose |
 |---|---|---|---|
 | backgrounds/menu.png | 948 × 1659 | No | Menu clouds, sky and floating islands; overlay live logo and controls. |
-| characters/chaos_hand.png | 1312 × 1199 | Yes | Chaos boss hero, profile skin or milestone. |
 | characters/robot.png | 1145 × 1374 | Yes | Profile avatar / tap assistant mascot. |
 | characters/tutorial_hand.png | 1226 × 1283 | Yes | Gameplay tutorial hand; ripple circles drawn by widgets. |
 | worlds/world_atlas.png | 1983 × 793 | No | Ten campaign world thumbnails, row-major grid below. |
@@ -47,12 +46,6 @@ Generated 2026-09-28 with the built-in OpenAI `image_gen` image generation tool.
 Original source filename: `exec-e881a00f-7748-4ed9-88ce-30dded10ecc4.png`
 
 Use case: stylized-concept. Generate a production background asset for a polished portrait mobile arcade fantasy game. 1024x1792 tall portrait composition. Render only the environment, absolutely no text, logo, buttons, interface, phone frame, icon, hand, or character. The environment matches a glossy vibrant hand-painted 2D fantasy mobile illustration: near-black navy starry sky in the top 45 percent, sweeping lush billowing blue cyan and violet clouds framing both sides, electric magenta underglow along lower cloud edges, small purple rocky floating islands with vivid turquoise grassy tops and tiny stylized crystal formations near the bottom left and right edges. Distant small blue islands and sparkling particles provide depth. The main island on left sits near 75 percent down, right at 67 percent, another bottom right 88 percent. Leave the broad central column clean darker navy for separately drawn mobile interface: calm dark upper center for logo and dark open center for buttons. Lower center transitions to luminous violet blue mist. Rich deep blue shadows, cyan rim light, magenta accent sparkles, crisp readable stylized shapes and polished painterly texture, exciting magical arcade atmosphere. No real landscape horizon, no photorealism, no water, no lettering or symbols.
-
-### characters/chaos_hand.png
-
-Original source filename: `exec-0f7c5f54-7db7-4a64-a0c7-56296cc802a4.png`
-
-Use case: stylized-concept. Asset type: isolated transparent PNG game boss illustration. Draw an original giant spectral purple hand reaching out at the viewer in a dramatic claw gesture, five distinct fingers with rounded magical violet nails and a wide palm, wrist tapering to an ethereal wisp at lower right. Entire hand visible with generous transparent margin all sides. Tilt the hand slightly clockwise, fingers curl downward toward viewer, index in upper center, thumb at left, little finger at right. Glossy hand-painted 2D arcade fantasy illustration, simple bold rounded anatomy, dark ultramarine purple interior shadows, luminous saturated violet and magenta edge highlights, subtle bright blue reflected glow. Sparse very small violet sparks around fingertips. Transparent background, genuinely empty alpha behind hand and glow. No scene, no interface, no text, no symbols, no card, no border, no objects, no humanoid body, no jewelry. Polished mobile game mascot style; playful menacing magical chaos hand.
 
 ### characters/robot.png
 
@@ -87,6 +80,11 @@ Use case: stylized-concept. Asset type: pure portrait background environment for
 
 
 ## Native vector and font assets
+
+- Chaos entry hero: original resolution-independent Flutter Canvas composition
+  of fixed cyan/magenta rounded zone outlines, rings, sparks and a yellow bolt
+  in `lib/ui/screens/chaos_intro_screen.dart` (`_ChaosZoneArtwork`). It replaces the superseded creature
+  illustration and does not depict a hand.
 
 - Logo and warm GAME OVER/CHAOS titles: original layered Flutter vector/text
   composition in `lib/ui/widgets/arcade_widgets.dart` (ArcadeLogo/BeveledTitle),

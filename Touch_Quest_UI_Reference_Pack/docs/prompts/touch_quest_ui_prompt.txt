@@ -1,5 +1,13 @@
 TOUCH QUEST — REFERENCE-MATCHED FLUTTER UI IMPLEMENTATION
 
+CURRENT USER OVERRIDE — REMOVE ALL BOSS HANDS
+This follow-up instruction supersedes conflicting artwork and feature directions
+in the original reference board. Remove boss-hand characters, mechanics, audio,
+badges, and the 25,000-tap milestone. Use original abstract neon zone artwork for
+Chaos entry. Retain the ordinary tutorial tap pointer and original robot mascot.
+Keep supplied reference raster images unchanged as archival comparison material;
+their superseded creature art is not a production requirement or bundled asset.
+
 REPOSITORY
 https://github.com/mleikam1/touchquest
 
@@ -119,7 +127,7 @@ Create separate, production-quality assets for:
 - Touch Quest logo with transparent background.
 - Main-menu background: sky/nebula, clouds, floating islands, foreground accents.
 - Gameplay background and energy streaks.
-- Chaos entry artwork: large purple spectral hand, sparks, floating shapes.
+- Chaos entry artwork: abstract neon touch-zone composition, sparks, floating shapes.
 - Game Over red lightning/background and stylized title.
 - Campaign thumbnails for the themed worlds.
 - Original robot mascot and tutorial tap hand.
@@ -308,7 +316,7 @@ coordinates local to the bounded gameplay arena. Decorative glow is outside the
 hitbox; it must not silently enlarge/shrink accepted input.
 
 Do not change target size or position while it is the active area. No continuous
-target motion, including during bosses. Recalculate safely on resize/orientation
+target motion. Recalculate safely on resize/orientation
 changes; pause/re-arm rather than moving a target under an ongoing touch.
 
 Implement these as states of the existing gameplay screen. Casual remains a
@@ -366,21 +374,21 @@ misspellings rather than reproducing them.
 
 11. SCREEN 7 — CHAOS ENTRY
 
-Match 07_chaos_entry.png.
+Use 07_chaos_entry.png for layout and color hierarchy only; its creature is
+superseded by the current abstract-zone artwork override.
 
-Large orange/yellow CHAOS RUN title; dominant purple spectral hand illustration;
+Large orange/yellow CHAOS RUN title; dominant abstract neon zone illustration;
 small colored shapes and energy particles; pink/white subtitle:
 Survive the madness...
 
 Feature text:
 Shifting touch zones
 Ghost taps
-Boss hand
 Random events
 Increasing difficulty
 
 Wide yellow/orange START CHAOS button near the bottom, safely above the home
-indicator. Start the actual Chaos mode. The hand illustration can animate, but
+indicator. Start the actual Chaos mode. Decorative zone artwork can animate, but
 valid touch boxes still use preview-then-switch, never continuous drift.
 
 12. SCREEN 8 — PROFILE
@@ -454,9 +462,9 @@ Build its visual vocabulary into milestone cards, badge reveals, effects, and th
 profile collection:
 100 background shift; 200 explosions; 300 funny sounds; 500 Overdrive;
 1,000 ascension medal; 3,000 robot assistant; 5,000 golden trail;
-10,000 crown; 25,000 purple boss hand; 100,000 ornate Tap God emblem.
+10,000 crown; 100,000 ornate Tap God emblem.
 
-Preserve the full existing milestone catalog through 100,000, including milestones
+Preserve the remaining milestone catalog through 100,000, including milestones
 not pictured in the strip. Trigger milestones from real run/progression state.
 Debug previews may jump to milestones but must never change production accounts.
 

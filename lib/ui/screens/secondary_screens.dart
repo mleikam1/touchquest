@@ -449,7 +449,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 9),
                 Row(
                   children: [
-                    for (final n in [1000, 10000, 25000, 100000]) ...[
+                    for (final n in [1000, 10000, 100000]) ...[
                       Expanded(
                         child: BadgeTile(
                           threshold: n,
@@ -1520,58 +1520,62 @@ Future<void> showBadgeDetails(
   BuildContext context,
   int threshold,
   SaveService save,
-) => showDialog<void>(
-  context: context,
-  builder: (context) {
-    final unlocked = save.badges.contains(threshold);
-    return _QuestDialog(
-      title: milestones[threshold] ?? 'TAP ACHIEVEMENT',
-      children: [
-        Center(
-          child: SizedBox(
-            width: 125,
-            height: 125,
-            child: CustomPaint(painter: MedalPainter(threshold)),
-          ),
-        ),
-        const SizedBox(height: 14),
-        Text(
-          unlocked ? 'UNLOCKED' : '${formatNumber(threshold)} RAW TAPS',
-          textAlign: TextAlign.center,
-          style: _heading.copyWith(
-            color: unlocked ? ArcadeColors.yellow : _cyan,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          unlocked
-              ? 'You earned this badge by reaching ${formatNumber(threshold)} raw taps in one run.'
-              : 'Reach ${formatNumber(threshold)} raw taps in a single run. Boosted score does not count toward this milestone.',
-          textAlign: TextAlign.center,
-          style: _body.copyWith(color: _muted),
-        ),
-        if (!unlocked) ...[
-          const SizedBox(height: 14),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: LinearProgressIndicator(
-              value: (save.number('bestRawRun') / threshold).clamp(0, 1),
-              minHeight: 6,
-              color: _cyan,
-              backgroundColor: const Color(0xff020c23),
+) {
+  // Retired milestones can remain in historical saves, but have no UI entry.
+  if (!milestones.containsKey(threshold)) return Future<void>.value();
+  return showDialog<void>(
+    context: context,
+    builder: (context) {
+      final unlocked = save.badges.contains(threshold);
+      return _QuestDialog(
+        title: milestones[threshold]!,
+        children: [
+          Center(
+            child: SizedBox(
+              width: 125,
+              height: 125,
+              child: CustomPaint(painter: MedalPainter(threshold)),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 14),
           Text(
-            'BEST: ${formatNumber(save.number('bestRawRun'))}',
-            style: _body.copyWith(fontSize: 14, color: _muted),
+            unlocked ? 'UNLOCKED' : '${formatNumber(threshold)} RAW TAPS',
             textAlign: TextAlign.center,
+            style: _heading.copyWith(
+              color: unlocked ? ArcadeColors.yellow : _cyan,
+            ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            unlocked
+                ? 'You earned this badge by reaching ${formatNumber(threshold)} raw taps in one run.'
+                : 'Reach ${formatNumber(threshold)} raw taps in a single run. Boosted score does not count toward this milestone.',
+            textAlign: TextAlign.center,
+            style: _body.copyWith(color: _muted),
+          ),
+          if (!unlocked) ...[
+            const SizedBox(height: 14),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: LinearProgressIndicator(
+                value: (save.number('bestRawRun') / threshold).clamp(0, 1),
+                minHeight: 6,
+                color: _cyan,
+                backgroundColor: const Color(0xff020c23),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'BEST: ${formatNumber(save.number('bestRawRun'))}',
+              style: _body.copyWith(fontSize: 14, color: _muted),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ],
-      ],
-    );
-  },
-);
+      );
+    },
+  );
+}
 
 Future<void> showEffectDetails(
   BuildContext context,

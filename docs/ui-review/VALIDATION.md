@@ -5,12 +5,25 @@ framework ad70ec4617, Dart 3.12.2, Flame 1.38.2. Xcode 26.3 (17C529).
 Browser: Google Chrome 153.0.8010.54, running the actual Flutter web app.
 `pubspec.lock` remains unchanged from the starting commit.
 
+## Removal follow-up validation
+
+The boss-hand removal was rechecked with formatting, analysis, all 134 Flutter
+tests (including the ten visual comparisons), and a web release build. Chaos and
+Profile goldens were refreshed and inspected; all ten Chrome gallery screens were
+recaptured. The release bundle check in `removed-content-check.json` verifies no
+retired art/audio files or boss-hand labels remain in the compiled game. Regression
+tests cover progression past 25,000 taps and old saves with the retired badge;
+scores, campaign progress, cosmetics and legitimate achievements stay intact.
+
+The Android, iOS and backend results below are retained from the original
+implementation validation; those commands were not rerun for this Dart/UI cleanup.
+
 ## Commands
 
 | Command | Result |
 | --- | --- |
 | `flutter analyze --no-pub` | Passed, zero issues; `analyze.log` |
-| `flutter test --no-pub` | Passed 132 tests, including all 10 golden comparisons; `flutter-tests.log` |
+| `flutter test --no-pub` | Passed 134 tests, including all 10 golden comparisons; `flutter-tests.log` |
 | `node --test firebase/functions/validation.test.js` | Passed 4 backend tests; `backend-tests.log` |
 | `flutter build web --no-pub` | Passed; `web-build.log` |
 | `flutter build apk --debug --no-pub` | Passed; `android-build.log` |

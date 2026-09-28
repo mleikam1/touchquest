@@ -52,72 +52,9 @@ class ChaosIntroScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 SizedBox(
                   height: constraints.maxHeight < 800 ? 280 : 310,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      const Positioned(
-                        left: 0,
-                        top: 150,
-                        child: Icon(
-                          Icons.star_border_rounded,
-                          size: 50,
-                          color: ArcadeColors.magenta,
-                          shadows: [
-                            Shadow(color: ArcadeColors.magenta, blurRadius: 22),
-                          ],
-                        ),
-                      ),
-                      const Positioned(
-                        right: 8,
-                        bottom: 0,
-                        child: Icon(
-                          Icons.hexagon_outlined,
-                          size: 28,
-                          color: Color(0xffff557c),
-                        ),
-                      ),
-                      const Positioned(
-                        left: 22,
-                        top: 28,
-                        child: Icon(
-                          Icons.diamond_outlined,
-                          size: 26,
-                          color: ArcadeColors.cyan,
-                        ),
-                      ),
-                      Positioned(
-                        left: 75,
-                        bottom: 0,
-                        child: Container(
-                          width: 90,
-                          height: 90,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                Colors.white,
-                                ArcadeColors.yellow,
-                                ArcadeColors.magenta,
-                                Colors.transparent,
-                              ],
-                              stops: [0, .06, .20, 1],
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.auto_awesome,
-                            color: ArcadeColors.yellow,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                      Transform.rotate(
-                        angle: -.13,
-                        child: Image.asset(
-                          'assets/art/characters/chaos_hand.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ],
+                  width: double.infinity,
+                  child: const ExcludeSemantics(
+                    child: CustomPaint(painter: _ChaosZoneArtwork()),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -142,7 +79,6 @@ class ChaosIntroScreen extends StatelessWidget {
                       for (final text in const [
                         'Shifting touch zones',
                         'Ghost taps',
-                        'Boss hand',
                         'Random events',
                         'Increasing difficulty',
                       ])
@@ -185,4 +121,97 @@ class ChaosIntroScreen extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Decorative, static touch zones echo the mode's fixed target geometry.
+class _ChaosZoneArtwork extends CustomPainter {
+  const _ChaosZoneArtwork();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.translate(size.width / 2, size.height / 2);
+    final scale = (size.width / 342).clamp(0.0, 1.0);
+    canvas.scale(scale);
+    final paint = Paint();
+    const glowBounds = Rect.fromLTWH(-160, -140, 320, 280);
+    paint.shader = const RadialGradient(
+      colors: [Color(0x507938f2), Color(0x1600d9ff), Colors.transparent],
+      stops: [0, .5, 1],
+    ).createShader(glowBounds);
+    canvas.drawOval(glowBounds, paint);
+    paint.shader = null;
+
+    // A quiet orbital frame and sparks keep the original arcade atmosphere.
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = ArcadeColors.violet.withValues(alpha: .4);
+    canvas.drawCircle(Offset.zero, 117, paint);
+    canvas.drawCircle(Offset.zero, 128, paint);
+    for (final (point, color) in const [
+      (Offset(-135, -69), ArcadeColors.cyan),
+      (Offset(129, 54), ArcadeColors.magenta),
+      (Offset(-78, 108), ArcadeColors.yellow),
+      (Offset(56, -119), ArcadeColors.cyan),
+    ]) {
+      paint
+        ..strokeWidth = 2
+        ..color = color;
+      canvas.drawLine(
+        point - const Offset(5, 0),
+        point + const Offset(5, 0),
+        paint,
+      );
+      canvas.drawLine(
+        point - const Offset(0, 5),
+        point + const Offset(0, 5),
+        paint,
+      );
+    }
+
+    for (final (rect, color) in const [
+      (Rect.fromLTWH(0, -91, 118, 98), ArcadeColors.magenta),
+      (Rect.fromLTWH(-117, -30, 172, 125), ArcadeColors.cyan),
+    ]) {
+      final zone = RRect.fromRectAndRadius(rect, const Radius.circular(22));
+      paint
+        ..style = PaintingStyle.fill
+        ..color = const Color(0xff081b42);
+      canvas.drawRRect(zone, paint);
+      paint
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 8
+        ..color = color.withValues(alpha: .18)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+      canvas.drawRRect(zone, paint);
+      paint
+        ..maskFilter = null
+        ..strokeWidth = 2
+        ..color = color;
+      canvas.drawRRect(zone, paint);
+      paint
+        ..strokeWidth = 1
+        ..color = color.withValues(alpha: .22);
+      canvas.drawRRect(zone.deflate(7), paint);
+    }
+
+    // A bright bolt is the mode emblem, with no character or encounter implied.
+    final bolt = Path()
+      ..moveTo(-24, 0)
+      ..lineTo(-59, 40)
+      ..lineTo(-34, 40)
+      ..lineTo(-43, 67)
+      ..lineTo(-5, 24)
+      ..lineTo(-31, 24)
+      ..close();
+    paint
+      ..style = PaintingStyle.fill
+      ..color = ArcadeColors.yellow;
+    canvas.drawPath(bolt, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _ChaosZoneArtwork oldDelegate) => false;
 }

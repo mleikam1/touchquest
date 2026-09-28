@@ -1,0 +1,14 @@
+00:00 +0: loading /Users/MattLeikam/Documents/Codex/2026-09-28/files-pasted-by-the-user-touch/work/touchquest/test/ui_gallery_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: Production gallery 01_main_menu renders with bundled fonts
+00:00 +1: Production gallery 02_casual_gameplay renders with bundled fonts
+00:00 +2: Production gallery 03_transition_warning renders with bundled fonts
+00:01 +3: Production gallery 04_target_mode renders with bundled fonts
+00:01 +4: Production gallery 05_game_over renders with bundled fonts
+00:01 +5: Production gallery 06_campaign_map renders with bundled fonts
+00:01 +6: Production gallery 07_chaos_entry renders with bundled fonts
+00:01 +7: Production gallery 08_profile renders with bundled fonts
+00:01 +8: Production gallery 09_settings renders with bundled fonts
+00:02 +9: Production gallery 10_leaderboards renders with bundled fonts
+00:02 +10: (tearDownAll)
+00:02 +10: All tests passed!
